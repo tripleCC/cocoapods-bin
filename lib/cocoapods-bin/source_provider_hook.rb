@@ -1,3 +1,5 @@
+require 'cocoapods-bin/sources_manager'
+
 Pod::HooksManager.register('cocoapods-bin', :source_provider) do |context, _|
 	sources_manager = Pod::Config.instance.sources_manager
 	podfile = Pod::Config.instance.podfile
