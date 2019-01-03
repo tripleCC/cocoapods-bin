@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     cocoapods-bin (0.0.1)
+      parallel
 
 GEM
   remote: https://rubygems.org/
@@ -66,6 +67,7 @@ GEM
     nanaimo (0.2.6)
     nap (1.1.0)
     netrc (0.11.0)
+    parallel (1.12.1)
     prettybacon (0.0.2)
       bacon (~> 1.2)
     rake (12.3.2)

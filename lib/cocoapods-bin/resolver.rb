@@ -17,7 +17,7 @@ module Pod
 			user_specs_by_target.each do |target, rspecs|
 				# use_binaries 并且 use_source_pods 不包含
 				use_binary_rspecs = if podfile.use_binaries? 
-															specs.reject { |rspec| ([rspec.name, rspec.root.name] & use_source_pods).any? }
+															rspecs.reject { |rspec| ([rspec.name, rspec.root.name] & use_source_pods).any? }
 													  else
 														  []
 													  end
