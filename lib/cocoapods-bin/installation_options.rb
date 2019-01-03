@@ -8,6 +8,12 @@ module Pod
 
     	# 是否警告不安全 source （如 http ）
     	option :warn_for_unsecure_source, false
+
+    	# 是否多进程执行 install_pod_sources 
+    	option :install_with_multi_processes, true
+
+    	# 是否多进程执行 update_repositories
+    	option :update_source_with_multi_processes, true
     end
   end
 end
