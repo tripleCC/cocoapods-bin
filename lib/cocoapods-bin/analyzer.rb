@@ -21,7 +21,7 @@ module Pod
       def update_repositories
       	if installation_options.update_source_with_multi_processes
 	      	# 并发更新私有源
-	      	Parallel.each(sources, in_processes: 4) do |source|
+	      	Parallel.each(sources, in_threads: 4) do |source|
 	          if source.git?
 	            config.sources_manager.update(source.name, true)
 	          else

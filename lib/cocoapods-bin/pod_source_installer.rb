@@ -3,8 +3,7 @@ require 'cocoapods-bin/installation_options'
 module Pod
   class Installer
     class PodSourceInstaller
-    	include Pod::Installer::InstallationOptions::Mixin
-    	delegate_installation_options { Config.instance.podfile }
+      attr_accessor :installation_options
 
     	alias_method :old_verify_source_is_secure, :verify_source_is_secure
     	def verify_source_is_secure(root_spec)
