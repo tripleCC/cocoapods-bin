@@ -18,27 +18,13 @@ module Pod
     #       in the `plugins.json` file, once your plugin is released.
     #
     class Bin < Command
-      self.summary = 'Short description of cocoapods-bin.'
-
+      self.abstract_command = true
+      self.summary = '组件二进制化插件.'
       self.description = <<-DESC
-        Longer description of cocoapods-bin.
+        利用源码私有源与二进制私有源，实现的组件二进制化插件。
+        可通过在 Podfile 中设置 use_binaries! ，指定所有组件使用二进制依赖，
+        设置 set_use_source_pods ，指定需要使用源码依赖的组件
       DESC
-
-      self.arguments = 'NAME'
-
-      def initialize(argv)
-        @name = argv.shift_argument
-        super
-      end
-
-      def validate!
-        super
-        help! 'A Pod name is required.' unless @name
-      end
-
-      def run
-        UI.puts "Add your implementation for the cocoapods-bin plugin in #{__FILE__}"
-      end
     end
   end
 end

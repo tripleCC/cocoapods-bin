@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = CocoapodsBin::VERSION
   spec.authors       = ['tripleCC']
   spec.email         = ['triplec.linux@gmail.com']
-  spec.description   = %q{A short description of cocoapods-bin.}
-  spec.summary       = %q{A longer description of cocoapods-bin.}
+  spec.description   = %q{cocoapods-bin.}
+  spec.summary       = %q{cocoapods-bin.}
   spec.homepage      = 'https://github.com/EXAMPLE/cocoapods-bin'
   spec.license       = 'MIT'
 
