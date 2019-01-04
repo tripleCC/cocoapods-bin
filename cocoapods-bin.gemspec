@@ -5,7 +5,7 @@ require 'cocoapods-bin/gem_version.rb'
 
 Gem::Specification.new do |spec|
   spec.name          = 'cocoapods-bin'
-  spec.version       = CocoapodsBin::VERSION
+  spec.version       = CBin::VERSION
   spec.authors       = ['tripleCC']
   spec.email         = ['triplec.linux@gmail.com']
   spec.description   = %q{cocoapods-bin.}
@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'parallel'
   spec.add_dependency 'cocoapods', '~> 1.2'
-  
+
   spec.add_development_dependency 'bundler', '~> 1.3'
   spec.add_development_dependency 'rake'
 end

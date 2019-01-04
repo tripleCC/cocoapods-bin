@@ -1,6 +1,6 @@
-require 'cocoapods-bin/podfile'
-require 'cocoapods-bin/sources_manager'
-require 'cocoapods-bin/installation_options'
+require 'cocoapods-bin/native/podfile'
+require 'cocoapods-bin/native/sources_manager'
+require 'cocoapods-bin/native/installation_options'
 
 module Pod
 	class Resolver

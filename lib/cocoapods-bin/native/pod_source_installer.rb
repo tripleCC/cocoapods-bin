@@ -1,4 +1,4 @@
-require 'cocoapods-bin/installation_options'
+require 'cocoapods-bin/native/installation_options'
 
 module Pod
   class Installer

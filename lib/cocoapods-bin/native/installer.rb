@@ -1,6 +1,6 @@
 require 'parallel'
 require 'cocoapods'
-require 'cocoapods-bin/pod_source_installer'
+require 'cocoapods-bin/native/pod_source_installer'
 
 module Pod
 	class Installer
