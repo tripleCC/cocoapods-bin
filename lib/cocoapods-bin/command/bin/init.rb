@@ -10,7 +10,43 @@ module Pod
           如二进制私有源地址、源码私有源地址等。
         DESC
 
+        def self.options
+          [
+            ['--bin-url=URL', '配置文件地址，直接从此地址下载配置文件'],
+          ].concat(super)
+        end
+
+
+        def initialize(argv)
+          @bin_url = argv.option('bin-url')
+          super
+        end
+
         def run 
+          if @bin_url.nil?
+            config_with_asker
+          else
+            config_with_url(@bin_url)
+          end
+        end
+
+        private
+
+        def config_with_url(url)
+          require 'open-uri'
+
+          UI.puts "开始下载配置文件...\n"
+          file = open(url)
+          contents = YAML.load(file.read) 
+          
+          UI.puts "开始同步配置文件...\n"
+          CBin.config.sync_config(contents.to_hash)          
+          UI.puts "设置完成.\n".green
+        rescue Errno::ENOENT => error 
+          raise Informative, "配置文件路径 #{url} 无效，请确认后重试."
+        end
+
+        def config_with_asker
           asker = CBin::Config::Asker.new
           asker.wellcome_message
 
