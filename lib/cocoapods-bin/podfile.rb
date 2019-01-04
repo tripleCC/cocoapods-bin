@@ -23,11 +23,11 @@ module Pod
 		end
 
 		def use_binaries?
-			get_internal_hash_value('use_binaries', false)
+			get_internal_hash_value('use_binaries', false) || ENV['use_binaries'] == 'true'
 		end
 
 		def use_source_pods
-			get_internal_hash_value('use_source_pods', [])
+			get_internal_hash_value('use_source_pods', []) + String(ENV['use_source_pods']).split('|').uniq
 		end
 
 		private
