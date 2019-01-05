@@ -6,7 +6,7 @@ module Pod
       class CSpec < Bin 
         self.summary = '创建二进制 spec.'
         self.description = <<-DESC
-          根据源码 spec，创建对应的二进制 spec.
+          根据源码 podspec 文件，创建对应的二进制 podspec 文件.
         DESC
 
         self.arguments = [

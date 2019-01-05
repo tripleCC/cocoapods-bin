@@ -1,4 +1,6 @@
 require 'cocoapods-bin/command/bin/init'
+require 'cocoapods-bin/command/bin/cspec'
+# require 'cocoapods-bin/command/bin/publish'
 
 
 module Pod
