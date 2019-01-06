@@ -16,7 +16,7 @@ module Pod
 
         def self.options
           [
-            ['--spec', '使用 spec lint'],
+            ['--spec', '使用 spec lint, 只支持本地，不支持链接'],
             ['--binary', 'lint 二进制组件'],
             ['--code-dependency', '使用源码依赖进行 lint'],
           ].concat(Pod::Command::Lib::Lint.options).concat(super).uniq
