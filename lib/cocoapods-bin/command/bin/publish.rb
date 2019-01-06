@@ -17,14 +17,14 @@ module Pod
         def self.options
           [
             ['--binary', '发布二进制组件'],
-            ['--lint-use-code', '使用源码依赖进行 lint'],
+            ['--code-dependency', '使用源码依赖进行 lint'],
           ].concat(Pod::Command::Repo::Push.options).concat(super).uniq
         end
 
         def initialize(argv)
           @podspec = argv.shift_argument
           @binary = argv.flag?('binary')
-          @lint_use_code = argv.flag?('lint-use-code')
+          @code_dependency = argv.flag?('code-dependency')
           @sources = argv.option('sources') || []
           super
 
@@ -32,21 +32,17 @@ module Pod
         end
 
         def run 
-          Podfile.execute_with_use_binaries(!@lint_use_code) do 
+          Podfile.execute_with_use_binaries(!@code_dependency) do 
             argvs = [
               repo,
               spec_file,
               "--sources=#{sources}",
               *@additional_args
             ]
-            
-            begin 
-              push = Pod::Command::Repo::Push.new(CLAide::ARGV.new(argvs))
-              push.validate!
-              push.run
-            rescue => error 
-              raise StandardError, "执行 pod repo push 失败，错误信息 #{error}".red
-            end
+          
+            push = Pod::Command::Repo::Push.new(CLAide::ARGV.new(argvs))
+            push.validate!
+            push.run
           end
         end
 
@@ -71,7 +67,6 @@ module Pod
           spec_generator = CBin::SpecGenerator.new(spec)
           spec_generator.generate
           spec_generator.write_to_file
-          # 根据源码 podspec 生成二进制 podspec
           spec_generator.filename
         end
 

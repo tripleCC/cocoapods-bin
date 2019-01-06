@@ -1,5 +1,6 @@
 require 'cocoapods-bin/command/bin/init'
 require 'cocoapods-bin/command/bin/cspec'
+require 'cocoapods-bin/command/bin/lint'
 require 'cocoapods-bin/command/bin/publish'
 
 
@@ -58,7 +59,7 @@ module Pod
       def spec_files
         @spec_files ||= Pathname.glob('*.podspec{,.json}')
       end
-      
+
       def binary_spec_files
         @binary_spec_files ||= Pathname.glob('*.binary.podspec{,.json}')
       end
