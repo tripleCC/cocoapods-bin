@@ -1,9 +1,10 @@
 require 'cocoapods-bin/config/config'
+require 'cocoapods-bin/native'
 
 module Pod
   class Command
     class Bin < Command
-      class Init < Bin 
+      class Publish < Bin 
         self.summary = '发布组件.'
         self.description = <<-DESC
           发布二进制组件 / 源码组件
@@ -15,92 +16,71 @@ module Pod
 
         def self.options
           [
-            ['--binary', '推送二进制组件'],
+            ['--binary', '发布二进制组件'],
             ['--lint-use-code', '使用源码依赖进行 lint'],
-            ['--sources=https://github.com/artsy/Specs,master', 'The sources from which to pull dependent pods ' \
-             '(defaults to all available repos). ' \
-             'Multiple sources must be comma-delimited.'],
-            ['--commit-message="Fix bug in pod"', 'Add custom commit message. ' \
-            'Opens default editor if no commit message is specified.'],
-          ].concat(super)
+          ].concat(Pod::Command::Repo::Push.options).concat(super).uniq
         end
 
         def initialize(argv)
           @podspec = argv.shift_argument
           @binary = argv.flag?('binary')
           @lint_use_code = argv.flag?('lint-use-code')
-          @sources = Array(argv.option('sources'))
-          @message = argv.option('commit-message')
+          @sources = argv.option('sources') || []
           super
+
+          @additional_args = argv.remainder!
         end
 
         def run 
-          argvs = [
-              default_source.name,
-              @spec_file,
-              "--sources=#{@sources + code_binary_source_names}",
-              '--allow-warnings',
-              '--use-libraries',
-          ]
-          argvs << %Q[--commit-message=#{commit_prefix(spec) + "\n" + @commit_message}] unless @commit_message.to_s.empty?
-
-          push = Pod::Command::Repo::Push.new(CLAide::ARGV.new(argvs))
-          push.validate!
-          push.run
-
-          raise StandardError, "执行 pod repo push 失败，错误信息 #{$?}".red if $?.exitstatus != 0
+          Podfile.execute_with_use_binaries(!@lint_use_code) do 
+            argvs = [
+              repo,
+              spec_file,
+              "--sources=#{sources}",
+              *@additional_args
+            ]
+            
+            begin 
+              push = Pod::Command::Repo::Push.new(CLAide::ARGV.new(argvs))
+              push.validate!
+              push.run
+            rescue => error 
+              raise StandardError, "执行 pod repo push 失败，错误信息 #{error}".red
+            end
+          end
         end
 
         private
 
-        def podspec_file
+        def spec_file
           if @podspec
             path = Pathname(@podspec)
             raise Informative, "Couldn't find #{@podspec}" unless path.exist?
             path
           else
-            files = Pathname.glob('*.podspec{,.json}')
-            raise Informative, "Couldn't find any podspec files in current directory" if files.empty?
-            path = files.first
-
-            if @binary
-              binary_files = Pathname.glob('*.binary.podspec{,.json}')
-              if binary_files.empty?
-                spec = Pod::Specification.from_file(path)
-                factory = CBin::SpecGenerator.new(spec)
-                bspec = factory.generate
-                # 根据源码 podspec 生成二进制 podspec
-                path = binary_files.first 
-              else
-                path = binary_files.first 
-              end
-            end
-
+            raise Informative, "Couldn't find any podspec files in current directory" if spec_files.empty?
+            raise Informative, "Couldn't find any code podspec files in current directory" if code_spec_files.empty? && !@binary
+            path = code_spec_files.first
+            path = binary_spec_files.first || generate_binary_spec_file(path) if @binary
             path
           end
         end
 
-        def code_binary_source_names
-          [sources_manager.binary_source.name, sources_manager.code_source.name]
+        def generate_binary_spec_file(code_spec_path)
+          spec = Pod::Specification.from_file(code_spec_path)
+          spec_generator = CBin::SpecGenerator.new(spec)
+          spec_generator.generate
+          spec_generator.write_to_file
+          # 根据源码 podspec 生成二进制 podspec
+          spec_generator.filename
         end
 
-        def sources_manager
-          sources_manager = Config.instance.sources_manager
+        def sources 
+         (@sources + [binary_source, code_source].map(&:name)).join(',')
         end
 
-        def default_source
-          @binary ? sources_manager.binary_source : sources_manager.code_source
-        end
-
-        def commit_prefix(spec)
-          output_path = default_source.pod_path(spec.name) + spec.version.to_s
-          if output_path.exist?
-            message = "[Fix] #{spec}"
-          elsif output_path.dirname.directory?
-            message = "[Update] #{spec}"
-          else
-            message = "[Add] #{spec}"
-          end
+        def repo
+          @binary ? binary_source.name : code_source.name 
         end
       end
     end

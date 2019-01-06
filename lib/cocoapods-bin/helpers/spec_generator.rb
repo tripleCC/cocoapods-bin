@@ -45,6 +45,16 @@ module CBin
 			@spec
 		end
 
+		def write_to_file(file = filename)
+			File.open(file, 'w+') do |f|
+        f.write(spec.to_pretty_json)
+      end
+		end
+		
+		def filename 
+			"#{spec.name}.binary.podspec.json" 
+		end
+
 		private
 
 		def ref_spec_consumer(platform = :ios)

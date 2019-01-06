@@ -1,6 +1,6 @@
 require 'cocoapods-bin/command/bin/init'
 require 'cocoapods-bin/command/bin/cspec'
-# require 'cocoapods-bin/command/bin/publish'
+require 'cocoapods-bin/command/bin/publish'
 
 
 module Pod
@@ -30,6 +30,42 @@ module Pod
         可通过在 Podfile 中设置 use_binaries! ，指定所有组件使用二进制依赖，
         设置 set_use_source_pods ，指定需要使用源码依赖的组件
       DESC
+
+      def initialize(argv)
+        @help = argv.flag?('help')
+        super 
+      end
+
+      def validate!
+        super
+        # 这里由于 --help 是在 validate! 方法中提取的，会导致 --help 失效
+        # pod lib create 也有这个问题
+        banner! if @help
+      end
+
+      def sources_manager
+        Config.instance.sources_manager
+      end
+
+      def binary_source
+        sources_manager.binary_source
+      end
+
+      def code_source
+        sources_manager.code_source
+      end
+
+      def spec_files
+        @spec_files ||= Pathname.glob('*.podspec{,.json}')
+      end
+      
+      def binary_spec_files
+        @binary_spec_files ||= Pathname.glob('*.binary.podspec{,.json}')
+      end
+
+      def code_spec_files
+        @code_spec_files ||= spec_files - binary_spec_files
+      end
     end
   end
 end

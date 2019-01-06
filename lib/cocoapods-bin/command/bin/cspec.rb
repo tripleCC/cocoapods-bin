@@ -26,11 +26,8 @@ module Pod
           spec_generator = CBin::SpecGenerator.new(spec)
           spec_generator.generate
 
-          file_name = "#{spec.name}.binary.podspec.json"
-          UI.puts "开始保存 #{file_name} 文件至当前目录...\n"
-          File.open(file_name, 'w+') do |f|
-            f.write(spec_generator.spec.to_pretty_json)
-          end
+          UI.puts "开始保存 #{spec_generator.filename} 文件至当前目录...\n"
+          spec_generator.write_to_file
           UI.puts "创建二进制 podspec 文件成功.\n".green
         end
 
