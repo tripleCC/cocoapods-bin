@@ -19,6 +19,7 @@ module Pod
             ['--spec', '使用 spec lint, 只支持本地，不支持链接'],
             ['--binary', 'lint 组件的二进制版本'],
             ['--code-dependency', '使用源码依赖进行 lint'],
+            ['--suggest-options', '添加推荐的 options'],
           ].concat(Pod::Command::Lib::Lint.options).concat(super).uniq
         end
 
@@ -26,6 +27,7 @@ module Pod
           @spec = argv.flag?('spec')
           @podspec = argv.shift_argument
           @binary = argv.flag?('binary')
+          @suggest_options = argv.flag?('suggest-options')
           @code_dependency = argv.flag?('code-dependency')
           @sources = argv.option('sources') || []
           super
@@ -41,6 +43,8 @@ module Pod
               *@additional_args
             ]
             
+            argvs += ['--allow-warnings', '--use-libraries'] if @suggest_options
+
             lint_class = Object.const_get("Pod::Command::#{@spec ? 'Spec' : 'Lib'}::Lint") 
             lint = lint_class.new(CLAide::ARGV.new(argvs))
             lint.validate!
