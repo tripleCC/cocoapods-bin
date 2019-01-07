@@ -16,7 +16,7 @@ module Pod
 
         def self.options
           [
-            ['--binary', '发布二进制组件'],
+            ['--binary', '发布组件的二进制版本'],
             ['--code-dependency', '使用源码依赖进行 lint'],
           ].concat(Pod::Command::Repo::Push.options).concat(super).uniq
         end

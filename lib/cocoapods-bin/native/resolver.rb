@@ -29,8 +29,11 @@ module Pod
 					# 含有 subspecs 的组件暂不处理
 					next rspec if rspec.spec.subspec? || rspec.spec.subspecs.any?
 
-					# 采用二进制依赖并且不为开发组件 (development pods 的 source 为 nil)
-					use_binary = use_binary_rspecs.include?(rspec) && rspec.source
+					# developments 组件采用默认输入的 spec (development pods 的 source 为 nil)
+					next rspec if !rspec.source 
+
+					# 采用二进制依赖并且不为开发组件 
+					use_binary = use_binary_rspecs.include?(rspec)
 					source = use_binary ? sources_manager.binary_source : sources_manager.code_source 
 
 					spec_version = rspec.spec.version
@@ -45,6 +48,10 @@ module Pod
 						UI.message "【#{rspec.spec.name} | #{spec_version}】组件无对应二进制版本 , 将采用源码依赖." if use_binary#.yellow 
 						rspec
 					end
+
+					p rspec.spec.source
+
+					rspec 
 				end.compact
 			end
 

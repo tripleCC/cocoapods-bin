@@ -3,6 +3,7 @@ module Pod
 		USE_BINARIES = 'use_binaries'.freeze
 		USE_SOURCE_PODS = 'use_source_pods'.freeze
 		USE_BINARIES_SELECTOR = 'use_binaries_selector'.freeze
+		# TREAT_DEVELOPMENTS_AS_NORMAL = 'treat_developments_as_normal'.freeze
 
 		module DSL
 			def use_binaries!(flag = true)

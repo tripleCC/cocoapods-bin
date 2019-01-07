@@ -6,9 +6,10 @@ module CBin
 		attr_reader :ref_spec
 		attr_reader :spec
 
-		def initialize(ref_spec) 
+		def initialize(ref_spec, platforms = 'ios') 
 			@ref_spec = ref_spec
 			@spec = ref_spec.dup
+			@platforms = Array(platforms)
 			validate!			
 		end
 
@@ -40,6 +41,12 @@ module CBin
 			spec_hash = @spec.to_hash
 			spec_hash.delete('license')
 			spec_hash.delete('resource_bundles')
+
+			# Filter platforms
+			platforms = spec_hash['platforms']
+			selected_platforms = platforms.select { |k, v| @platforms.include?(k) } 
+			spec_hash['platforms'] = selected_platforms.empty? ? platforms : selected_platforms
+ 
 			@spec = Pod::Specification.from_hash(spec_hash)
 
 			@spec
@@ -50,7 +57,7 @@ module CBin
         f.write(spec.to_pretty_json)
       end
 		end
-		
+
 		def filename 
 			"#{spec.name}.binary.podspec.json" 
 		end

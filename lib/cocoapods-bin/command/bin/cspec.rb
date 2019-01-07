@@ -13,7 +13,14 @@ module Pod
           CLAide::Argument.new('NAME.podspec', false),
         ]
 
+        def self.options
+          [
+            ['--platforms=ios', '生成二进制 spec 支持的平台'],
+          ].concat(super)
+        end
+
         def initialize(argv)
+          @platforms = argv.option('platforms') || 'ios'
           @podspec = argv.shift_argument
           super
         end
@@ -23,7 +30,7 @@ module Pod
           spec = Pod::Specification.from_file(podspec_file)
 
           UI.puts "开始生成二进制 podspec 文件...\n"
-          spec_generator = CBin::SpecGenerator.new(spec)
+          spec_generator = CBin::SpecGenerator.new(spec, @platforms)
           spec_generator.generate
 
           UI.puts "开始保存 #{spec_generator.filename} 文件至当前目录...\n"
