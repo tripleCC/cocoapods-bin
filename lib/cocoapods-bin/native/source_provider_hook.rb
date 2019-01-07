@@ -7,5 +7,5 @@ Pod::HooksManager.register('cocoapods-bin', :source_provider) do |context, _|
 	# 添加源码私有源
 	context.add_source(sources_manager.code_source)
 	# 添加二进制私有源
-	context.add_source(sources_manager.binary_source) if podfile.use_binaries?
+	context.add_source(sources_manager.binary_source) if podfile.use_binaries? || podfile.use_binaries_selector
 end

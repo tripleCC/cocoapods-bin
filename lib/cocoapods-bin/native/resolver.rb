@@ -7,7 +7,7 @@ module Pod
 		old_resolver_specs_by_target = instance_method(:resolver_specs_by_target)
 		define_method(:resolver_specs_by_target) do 
 			resolver_specs_by_target = old_resolver_specs_by_target.bind(self).call()
-
+			
 			# 过滤出用户工程
 			user_specs_by_target = resolver_specs_by_target.reject { |st| st.name.end_with?('_Tests') || st.name == 'Pods' }
 
@@ -48,8 +48,6 @@ module Pod
 						UI.message "【#{rspec.spec.name} | #{spec_version}】组件无对应二进制版本 , 将采用源码依赖." if use_binary#.yellow 
 						rspec
 					end
-
-					p rspec.spec.source
 
 					rspec 
 				end.compact
