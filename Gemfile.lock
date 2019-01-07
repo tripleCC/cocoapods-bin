@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     cocoapods-bin (0.0.1)
-      cocoapods (~> 1.2)
+      cocoapods (~> 1.4)
       parallel
 
 GEM
