@@ -1,3 +1,4 @@
+require 'parallel'
 require 'cocoapods-bin/native/podfile'
 require 'cocoapods-bin/native/sources_manager'
 require 'cocoapods-bin/native/installation_options'
@@ -8,7 +9,7 @@ module Pod
 		# >= 1.4.0 才有 resolver_specs_by_target 以及 ResolverSpecification
 		# >= 1.5.0 ResolverSpecification 才有 source，供 install 或者其他操作时，输入 source 变更
 		#	
-		if Pod.match_version?('~> 1.4') && method_defined?(:resolver_specs_by_target)
+		if Pod.match_version?('~> 1.4') 
 			old_resolver_specs_by_target = instance_method(:resolver_specs_by_target)
 			define_method(:resolver_specs_by_target) do 
 				resolver_specs_by_target = old_resolver_specs_by_target.bind(self).call()
@@ -30,7 +31,7 @@ module Pod
 															  []
 														  end
 
-					resolver_specs_by_target[target] = rspecs.map do |rspec|
+					resolver_specs_by_target[target] = Parallel.map(rspecs, in_threads: 8) do |rspec|
 						# 含有 subspecs 的组件暂不处理
 						next rspec if rspec.spec.subspec? || rspec.spec.subspecs.any?
 

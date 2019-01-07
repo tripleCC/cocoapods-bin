@@ -5,13 +5,11 @@ module Pod
     class PodSourceInstaller
       attr_accessor :installation_options
 
-      if method_defined?(:verify_source_is_secure)
-      	alias_method :old_verify_source_is_secure, :verify_source_is_secure
-      	def verify_source_is_secure(root_spec)
-      		# http source 默认不警告
-      		old_verify_source_is_secure(root_spec) if installation_options.warn_for_unsecure_source?
-      	end
-      end
+    	alias_method :old_verify_source_is_secure, :verify_source_is_secure
+    	def verify_source_is_secure(root_spec)
+    		# http source 默认不警告
+    		old_verify_source_is_secure(root_spec) if installation_options.warn_for_unsecure_source?
+    	end
     end
   end
 end
