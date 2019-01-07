@@ -18,14 +18,14 @@ module Pod
           [
             ['--binary', '发布组件的二进制版本'],
             ['--code-dependency', '使用源码依赖进行 lint'],
-            ['--suggest-options', '添加推荐的 options'],
+            ['--loose-options', '添加宽松的 options'],
           ].concat(Pod::Command::Repo::Push.options).concat(super).uniq
         end
 
         def initialize(argv)
           @podspec = argv.shift_argument
           @binary = argv.flag?('binary')
-          @suggest_options = argv.flag?('suggest-options')
+          @loose_options = argv.flag?('loose-options')
           @code_dependency = argv.flag?('code-dependency')
           @sources = argv.option('sources') || []
           super
@@ -42,7 +42,7 @@ module Pod
               *@additional_args
             ]
 
-            argvs += ['--allow-warnings', '--use-libraries', '--use-json'] if @suggest_options
+            argvs += ['--allow-warnings', '--use-libraries', '--use-json'] if @loose_options
           
             push = Pod::Command::Repo::Push.new(CLAide::ARGV.new(argvs))
             push.validate!
