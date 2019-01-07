@@ -31,7 +31,8 @@ module Pod
 															  []
 														  end
 
-					resolver_specs_by_target[target] = Parallel.map(rspecs, in_threads: 8) do |rspec|
+					# Parallel.map(rspecs, in_threads: 8) do |rspec| 
+					resolver_specs_by_target[target] = rspecs.map do |rspec|
 						# 含有 subspecs 的组件暂不处理
 						next rspec if rspec.spec.subspec? || rspec.spec.subspecs.any?
 
