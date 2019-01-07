@@ -42,7 +42,7 @@ module Pod
               *@additional_args
             ]
 
-            argvs += ['--allow-warnings', '--use-libraries'] if @suggest_options
+            argvs += ['--allow-warnings', '--use-libraries', '--use-json'] if @suggest_options
           
             push = Pod::Command::Repo::Push.new(CLAide::ARGV.new(argvs))
             push.validate!
