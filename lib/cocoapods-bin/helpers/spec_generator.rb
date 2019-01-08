@@ -49,6 +49,11 @@ module CBin
  
 			@spec = Pod::Specification.from_hash(spec_hash)
 
+			Pod::UI.message "生成二进制 podspec 内容: "
+      @spec.to_pretty_json.split("\n").each do |text|
+        Pod::UI.message text
+      end
+
 			@spec
 		end
 

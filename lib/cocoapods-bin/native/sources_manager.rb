@@ -1,3 +1,4 @@
+require 'cocoapods'
 require 'cocoapods-bin/config/config'
 
 module Pod

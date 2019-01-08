@@ -1,3 +1,5 @@
+require 'cocoapods'
+
 module Pod
 	class Podfile
 		USE_BINARIES = 'use_binaries'.freeze

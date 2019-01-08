@@ -1,4 +1,5 @@
 require 'parallel'
+require 'cocoapods'
 
 module Pod
   class Installer

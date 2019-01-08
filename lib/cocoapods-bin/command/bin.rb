@@ -1,7 +1,7 @@
 require 'cocoapods-bin/command/bin/init'
-require 'cocoapods-bin/command/bin/cspec'
-require 'cocoapods-bin/command/bin/lint'
-require 'cocoapods-bin/command/bin/publish'
+require 'cocoapods-bin/command/bin/spec'
+require 'cocoapods-bin/command/bin/lib'
+require 'cocoapods-bin/command/bin/repo'
 
 
 module Pod

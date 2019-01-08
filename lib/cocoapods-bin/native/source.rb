@@ -1,3 +1,5 @@
+require 'cocoapods'
+
 module Pod
   class Source
     # Returns the path of the specification with the given name and version.

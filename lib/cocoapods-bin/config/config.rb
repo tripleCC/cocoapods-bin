@@ -10,7 +10,7 @@ module CBin
 			{
 				'code_repo_url' => '源码私有源 Git 地址，如> git@git.2dfire.net:ios/cocoapods-spec.git',
 				'binary_repo_url' => '二进制私有源 Git 地址，如> git@git.2dfire.net:ios/cocoapods-spec-binary.git',
-				'binary_download_url' => '二进制下载地址，内部会依次传入组件名称与版本替换 %s ，如> http://iosframeworkserver-shopkeeperclient.app.2dfire.com/download/%s/%s.zip'
+				'binary_download_url' => '二进制下载地址，内部会依次传入组件名称与版本，替换字符串中的 %s ，如> http://iosframeworkserver-shopkeeperclient.app.2dfire.com/download/%s/%s.zip'
 			}
 		end
 

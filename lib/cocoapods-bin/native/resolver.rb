@@ -1,4 +1,5 @@
 require 'parallel'
+require 'cocoapods'
 require 'cocoapods-bin/native/podfile'
 require 'cocoapods-bin/native/sources_manager'
 require 'cocoapods-bin/native/installation_options'
