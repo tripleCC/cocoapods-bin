@@ -18,7 +18,7 @@ module Pod
           def self.options
             [
               ['--binary', 'lint 组件的二进制版本'],
-              ['--code-dependency', '使用源码依赖进行 lint'],
+              ['--code-dependencies', '使用源码依赖进行 lint'],
               ['--loose-options', '添加宽松的 options'],
             ].concat(Pod::Command::Lib::Lint.options).concat(super).uniq
           end
@@ -27,7 +27,7 @@ module Pod
             @podspec = argv.shift_argument
             @binary = argv.flag?('binary')
             @loose_options = argv.flag?('loose-options')
-            @code_dependency = argv.flag?('code-dependency')
+            @code_dependencies = argv.flag?('code-dependencies')
             @sources = argv.option('sources') || []
             super
 
@@ -35,10 +35,10 @@ module Pod
           end
 
           def run 
-            Podfile.execute_with_use_binaries(!@code_dependency) do 
+            Podfile.execute_with_use_binaries(!@code_dependencies) do 
               argvs = [
                 spec_file,
-                "--sources=#{sources}",
+                "--sources=#{sources_option(@code_dependencies, @sources)}",
                 *@additional_args
               ]
               
@@ -72,10 +72,6 @@ module Pod
             spec_generator.generate
             spec_generator.write_to_file
             spec_generator.filename
-          end
-
-          def sources 
-           (@sources + [binary_source, code_source].map(&:name)).join(',')
           end
         end
       end

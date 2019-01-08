@@ -1,3 +1,5 @@
+require 'cocoapods'
+
 if Pod.match_version?('~> 1.4')
 	require 'cocoapods-bin/native/analyzer'
 	require 'cocoapods-bin/native/installer'

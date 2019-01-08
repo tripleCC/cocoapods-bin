@@ -2,7 +2,7 @@ require 'cocoapods-bin/command/bin/init'
 require 'cocoapods-bin/command/bin/spec'
 require 'cocoapods-bin/command/bin/lib'
 require 'cocoapods-bin/command/bin/repo'
-
+require 'cocoapods-bin/helpers'
 
 module Pod
   class Command
@@ -24,6 +24,9 @@ module Pod
     #       in the `plugins.json` file, once your plugin is released.
     #
     class Bin < Command
+      include CBin::SourcesHelper
+      include CBin::SpecFilesHelper
+
       self.abstract_command = true
       self.summary = '组件二进制化插件.'
       self.description = <<-DESC
@@ -40,30 +43,6 @@ module Pod
         # 这里由于 --help 是在 validate! 方法中提取的，会导致 --help 失效
         # pod lib create 也有这个问题
         banner! if @help
-      end
-
-      def sources_manager
-        Config.instance.sources_manager
-      end
-
-      def binary_source
-        sources_manager.binary_source
-      end
-
-      def code_source
-        sources_manager.code_source
-      end
-
-      def spec_files
-        @spec_files ||= Pathname.glob('*.podspec{,.json}')
-      end
-
-      def binary_spec_files
-        @binary_spec_files ||= Pathname.glob('*.binary.podspec{,.json}')
-      end
-
-      def code_spec_files
-        @code_spec_files ||= spec_files - binary_spec_files
       end
     end
   end

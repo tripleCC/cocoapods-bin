@@ -35,7 +35,7 @@ module Pod
 					# Parallel.map(rspecs, in_threads: 8) do |rspec| 
 					resolver_specs_by_target[target] = rspecs.map do |rspec|
 						# 含有 subspecs 的组件暂不处理
-						next rspec if rspec.spec.subspec? || rspec.spec.subspecs.any?
+						# next rspec if rspec.spec.subspec? || rspec.spec.subspecs.any?
 
 						# developments 组件采用默认输入的 spec (development pods 的 source 为 nil)
 						next rspec unless rspec.spec.respond_to?(:spec_source) && rspec.spec.spec_source
@@ -47,7 +47,14 @@ module Pod
 						spec_version = rspec.spec.version
 						begin
 							# 从新 source 中获取 spec
-							specification = source.specification(rspec.name, spec_version)
+							specification = source.specification(rspec.root.name, spec_version)		
+
+							# 组件是 subspec
+							specification = specification.subspec_by_name(rspec.name, false, true) if rspec.spec.subspec?
+							# 这里可能出现分析依赖的 source 和切换后的 source 对应 specification 的 subspec 对应不上
+							# 造成 subspec_by_name 返回 nil，这个是正常现象
+							next unless specification
+
 							# 组装新的 rspec ，替换原 rspec
 							rspec = if Pod.match_version?('~> 1.4.0')
 												ResolverSpecification.new(specification, rspec.used_by_tests_only)
