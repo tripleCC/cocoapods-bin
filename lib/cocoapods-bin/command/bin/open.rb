@@ -6,16 +6,28 @@ module Pod
 
         def self.options
 	        [
-	          ['--deep=5', '查找深度.']
+	        	['--install', '先执行 install, 再执行 open. 相当于 pod install && pod bin open'],
+	        	['--update', '先执行 update, 再执行 open. 相当于 pod update && pod bin open'],
+	          ['--deep=5', '查找深度.'],
 	        ]
 	      end
 
         def initialize(argv)
+        	@install = argv.flag?('install')
+        	@update = argv.flag?('update')
         	@deep = argv.option('deep').try(:to_i) || 3
 	        super
 	      end
 
 	      def run
+	      	if @install || @update
+	      		command_class = Object.const_get("Pod::Command::#{@install ? 'Install' : 'Update'}")
+	      		command = command_class.new(CLAide::ARGV.new([])) 
+	      		command.validate!
+	          command.run
+	      	end
+
+
 	      	path = find_in_children(Pathname.pwd.children, @deep) || 
 	      		find_in_parent(Pathname.pwd.parent, @deep)
 	      	if path
