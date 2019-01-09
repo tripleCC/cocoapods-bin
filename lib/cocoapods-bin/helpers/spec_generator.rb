@@ -39,7 +39,7 @@ module CBin
 
 			# Unused for binary 
 			spec_hash = @spec.to_hash
-			spec_hash.delete('license')
+			# spec_hash.delete('license')
 			spec_hash.delete('resource_bundles')
 
 			# Filter platforms
