@@ -18,6 +18,7 @@ module Pod
           def self.options
             [
               ['--binary', '发布组件的二进制版本'],
+              ['--template-podspec=A.binary-template.podspec', '生成拥有 subspec 的二进制 spec 需要的模版 podspec, 插件会更改 version 和 source'],
               ['--code-dependencies', '使用源码依赖进行 lint'],
               ['--loose-options', '添加宽松的 options, 可能包括 --use-libraries (可能会造成 entry point (start) undefined)'],
               ['--reserve-created-spec', '保留生成的二进制 spec 文件'],
@@ -31,6 +32,7 @@ module Pod
             @code_dependencies = argv.flag?('code-dependencies')
             @sources = argv.option('sources') || []
             @reserve_created_spec = argv.flag?('reserve-created-spec')
+            @template_podspec = argv.option('template-podspec')
             super
 
             @additional_args = argv.remainder!
@@ -40,14 +42,15 @@ module Pod
             Podfile.execute_with_use_binaries(!@code_dependencies) do 
               argvs = [
                 repo,
-                spec_file,
                 "--sources=#{sources_option(@code_dependencies, @sources)}",
                 *@additional_args
               ]
 
+              argvs << spec_file if spec_file
+
               if @loose_options
                 argvs += ['--allow-warnings', '--use-json']
-                argvs << '--use-libraries' if spec.all_dependencies.any?
+                argvs << '--use-libraries' if code_spec.all_dependencies.any?
               end
             
               push = Pod::Command::Repo::Push.new(CLAide::ARGV.new(argvs))
@@ -55,37 +58,38 @@ module Pod
               push.run
             end
           ensure
-            @spec_generator.clear_spec_file if @spec_generator && !@reserve_created_spec
+            clear_binary_spec_file_if_needed
           end
 
           private
 
-          def spec 
-            Pod::Specification.from_file(spec_file)
+          def template_spec_file
+            @template_spec_file ||= begin
+              if @template_podspec
+                find_spec_file(@template_podspec) 
+              else 
+                binary_template_spec_file
+              end
+            end
           end
 
           def spec_file
             @spec_file ||= begin
               if @podspec
-                path = Pathname(@podspec)
-                raise Informative, "Couldn't find #{@podspec}" unless path.exist?
-                path
+                find_spec_file(@podspec) 
               else
-                raise Informative, "Couldn't find any podspec files in current directory" if spec_files.empty?
-                raise Informative, "Couldn't find any code podspec files in current directory" if code_spec_files.empty? && !@binary
-                path = code_spec_files.first
-                path = binary_spec_files.first || generate_binary_spec_file(path) if @binary
-                path
+                raise Informative, "当前目录下没有找到可用源码 podspec." if code_spec_files.empty?
+
+                spec_file = if @binary
+                              code_spec = Pod::Specification.from_file(code_spec_files.first)
+                              template_spec = Pod::Specification.from_file(template_spec_file) if template_spec_file
+                              create_binary_spec_file(code_spec, template_spec)
+                            else
+                              code_spec_files.first
+                            end
+                spec_file
               end
             end
-          end
-
-          def generate_binary_spec_file(code_spec_path)
-            spec = Pod::Specification.from_file(code_spec_path)
-            @spec_generator = CBin::SpecGenerator.new(spec)
-            @spec_generator.generate
-            @spec_generator.write_to_spec_file
-            @spec_generator.filename
           end
 
           def repo
