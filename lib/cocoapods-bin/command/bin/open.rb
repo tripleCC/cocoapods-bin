@@ -11,7 +11,7 @@ module Pod
 	      end
 
         def initialize(argv)
-        	@deep = argv.option('deep') || 3
+        	@deep = argv.option('deep').try(:to_i) || 3
 	        super
 	      end
 
