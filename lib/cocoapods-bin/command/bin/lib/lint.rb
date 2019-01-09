@@ -19,7 +19,7 @@ module Pod
             [
               ['--binary', 'lint 组件的二进制版本'],
               ['--code-dependencies', '使用源码依赖进行 lint'],
-              ['--loose-options', '添加宽松的 options'],
+              ['--loose-options', '添加宽松的 options, 可能包括 --use-libraries (可能会造成 entry point (start) undefined)'],
               ['--reserve-created-spec', '保留生成的二进制 spec 文件'],
             ].concat(Pod::Command::Lib::Lint.options).concat(super).uniq
           end
@@ -44,7 +44,11 @@ module Pod
                 *@additional_args
               ]
               
-              argvs += ['--allow-warnings', '--use-libraries'] if @loose_options
+              if @loose_options
+                argvs << '--allow-warnings'
+                argvs << '--use-libraries' if spec.all_dependencies.any?
+              end
+            
 
               lint = Pod::Command::Lib::Lint.new(CLAide::ARGV.new(argvs))
               lint.validate!
@@ -56,17 +60,23 @@ module Pod
 
           private
 
+          def spec 
+            Pod::Specification.from_file(spec_file)
+          end
+
           def spec_file
-            if @podspec
-              path = Pathname(@podspec)
-              raise Informative, "Couldn't find #{@podspec}" unless path.exist?
-              path
-            else
-              raise Informative, "Couldn't find any podspec files in current directory" if spec_files.empty?
-              raise Informative, "Couldn't find any code podspec files in current directory" if code_spec_files.empty? && !@binary
-              path = code_spec_files.first
-              path = binary_spec_files.first || generate_binary_spec_file(path) if @binary
-              path
+            @spec_file ||= begin
+              if @podspec
+                path = Pathname(@podspec)
+                raise Informative, "Couldn't find #{@podspec}" unless path.exist?
+                path
+              else
+                raise Informative, "Couldn't find any podspec files in current directory" if spec_files.empty?
+                raise Informative, "Couldn't find any code podspec files in current directory" if code_spec_files.empty? && !@binary
+                path = code_spec_files.first
+                path = binary_spec_files.first || generate_binary_spec_file(path) if @binary
+                path
+              end
             end
           end
 
