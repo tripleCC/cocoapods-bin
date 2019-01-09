@@ -42,7 +42,7 @@ module Pod
             if File.exist?(spec_generator.filename) && !@allow_overwrite
               UI.warn "二进制 podspec 文件 #{spec_generator.filename} 已存在.\n"
             else
-              spec_generator.write_to_file
+              spec_generator.write_to_spec_file
               UI.puts "创建二进制 podspec 文件成功.\n".green
             end
           end

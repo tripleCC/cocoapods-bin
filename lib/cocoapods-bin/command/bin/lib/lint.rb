@@ -20,6 +20,7 @@ module Pod
               ['--binary', 'lint 组件的二进制版本'],
               ['--code-dependencies', '使用源码依赖进行 lint'],
               ['--loose-options', '添加宽松的 options'],
+              ['--reserve-created-spec', '保留生成的二进制 spec 文件'],
             ].concat(Pod::Command::Lib::Lint.options).concat(super).uniq
           end
 
@@ -29,6 +30,7 @@ module Pod
             @loose_options = argv.flag?('loose-options')
             @code_dependencies = argv.flag?('code-dependencies')
             @sources = argv.option('sources') || []
+            @reserve_created_spec = argv.flag?('reserve-created-spec')
             super
 
             @additional_args = argv.remainder!
@@ -48,6 +50,8 @@ module Pod
               lint.validate!
               lint.run
             end
+          ensure
+            @spec_generator.clear_spec_file if @spec_generator && !@reserve_created_spec
           end
 
           private
@@ -68,10 +72,10 @@ module Pod
 
           def generate_binary_spec_file(code_spec_path)
             spec = Pod::Specification.from_file(code_spec_path)
-            spec_generator = CBin::SpecGenerator.new(spec)
-            spec_generator.generate
-            spec_generator.write_to_file
-            spec_generator.filename
+            @spec_generator = CBin::SpecGenerator.new(spec)
+            @spec_generator.generate
+            @spec_generator.write_to_spec_file
+            @spec_generator.filename
           end
         end
       end

@@ -8,7 +8,6 @@ module CBin
 
 		def initialize(ref_spec, platforms = 'ios') 
 			@ref_spec = ref_spec
-			@spec = ref_spec.dup
 			@platforms = Array(platforms)
 			validate!			
 		end
@@ -18,6 +17,7 @@ module CBin
 		end
 
 		def generate 
+			@spec = @ref_spec.dup
 			# vendored_frameworks | resources | source | source_files | public_header_files
 			# license | resource_bundles
 
@@ -57,14 +57,20 @@ module CBin
 			@spec
 		end
 
-		def write_to_file(file = filename)
+		def write_to_spec_file(file = filename)
 			File.open(file, 'w+') do |f|
         f.write(spec.to_pretty_json)
       end
+
+      @filename = file 
+		end
+
+		def clear_spec_file
+			File.delete(@filename) if File.exist?(@filename)
 		end
 
 		def filename 
-			"#{spec.name}.binary.podspec.json" 
+			@filename ||= "#{spec.name}.binary.podspec.json" 
 		end
 
 		private
