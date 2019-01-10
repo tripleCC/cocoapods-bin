@@ -1,4 +1,5 @@
 require 'cocoapods-bin/command/bin/repo/push'
+require 'cocoapods-bin/command/bin/repo/update'
 
 module Pod
   class Command
