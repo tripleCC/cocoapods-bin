@@ -58,7 +58,7 @@ module Pod
               push.run
             end
           ensure
-            clear_binary_spec_file_if_needed
+            clear_binary_spec_file_if_needed unless @reserve_created_spec
           end
 
           private
