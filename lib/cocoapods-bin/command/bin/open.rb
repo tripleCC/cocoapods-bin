@@ -27,7 +27,6 @@ module Pod
 	          command.run
 	      	end
 
-
 	      	path = find_in_children(Pathname.pwd.children, @deep) || 
 	      		find_in_parent(Pathname.pwd.parent, @deep)
 	      	if path
