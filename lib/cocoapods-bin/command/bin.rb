@@ -4,6 +4,7 @@ require 'cocoapods-bin/command/bin/lib'
 require 'cocoapods-bin/command/bin/repo'
 require 'cocoapods-bin/command/bin/open'
 require 'cocoapods-bin/command/bin/search'
+require 'cocoapods-bin/command/bin/list'
 require 'cocoapods-bin/helpers'
 
 module Pod

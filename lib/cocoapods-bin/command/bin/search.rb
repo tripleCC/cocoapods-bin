@@ -1,6 +1,3 @@
-require 'cocoapods-bin/command/bin/spec/create'
-require 'cocoapods-bin/command/bin/spec/lint'
-
 module Pod
   class Command
     class Bin < Command
