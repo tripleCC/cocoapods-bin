@@ -8,6 +8,7 @@ if Pod.match_version?('~> 1.4')
 	require 'cocoapods-bin/native/resolver'
 	require 'cocoapods-bin/native/source'
 	require 'cocoapods-bin/native/validator'
+	require 'cocoapods-bin/native/acknowledgements'
 end
 
 require 'cocoapods-bin/native/source_provider_hook'
