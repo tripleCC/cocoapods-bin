@@ -1,3 +1,4 @@
+require 'cocoapods-bin/native/specification'
 
 module Pod
   class Specification
@@ -10,13 +11,7 @@ module Pod
       #
       def validate_root_name
         if spec.root.name && file
-          acceptable_names = [
-            spec.root.name + '.podspec',
-            spec.root.name + '.podspec.json',
-            # 支持 binary 后缀
-            spec.root.name + '.binary.podspec',
-            spec.root.name + '.binary.podspec.json'
-          ]
+          acceptable_names = Specification::VALID_EXTNAME.map { |extname| "#{spec.root.name}#{extname}" }
           names_match = acceptable_names.include?(file.basename.to_s)
           unless names_match
             results.add_error('name', 'The name of the spec should match the ' \

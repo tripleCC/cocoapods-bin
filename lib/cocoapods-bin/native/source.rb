@@ -17,13 +17,10 @@ module Pod
       raise ArgumentError, 'No version' unless version
       path = pod_path(name) + version.to_s
 
-      specification_path =[
-        "#{name}.podspec.json", 
-        "#{name}.podspec", 
-        # 支持 binary 后缀
-        "#{name}.binary.podspec", 
-        "#{name}.binary.podspec.json"
-        ].map { |file| path + file }.find { |path| path.exist? }
+      specification_path = Specification::VALID_EXTNAME
+        .map { |extname| "#{name}#{extname}" }
+        .map { |file| path + file }
+        .find { |path| path.exist? }
 
       unless specification_path
         raise StandardError, "Unable to find the specification #{name} " \
