@@ -38,7 +38,8 @@ module Pod
 
 	        source = @code ? code_source : binary_source
 
-					sets = source.search_by_name(query_regex)
+	        aggregate = Pod::Source::Aggregate.new([source])
+					sets = aggregate.search_by_name(query_regex, true)
 
 					if(@use_pager)
 	          UI.with_pager { print_sets(sets) }
