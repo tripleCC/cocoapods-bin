@@ -15,7 +15,7 @@ module Pod
     	env_option :warn_for_unsecure_source, false
 
     	# 是否多进程执行 install_pod_sources 
-    	env_option :install_with_multi_processes, true
+    	env_option :install_with_multi_processes, false
 
     	# 是否多进程执行 update_repositories
     	env_option :update_source_with_multi_processes, true
