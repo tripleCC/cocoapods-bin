@@ -9,7 +9,7 @@ module Pod
 			#
 			alias_method :old_update_repositories, :update_repositories
       def update_repositories
-      	if installation_options.update_source_with_multi_processes
+      	if installation_options.update_source_with_multi_threads
 	      	# 并发更新私有源
 	      	Parallel.each(sources, in_threads: 4) do |source|
 	          if source.git?

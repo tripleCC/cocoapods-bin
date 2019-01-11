@@ -13,7 +13,7 @@ module Pod
 
 		alias_method :old_install_pod_sources, :install_pod_sources
     def install_pod_sources
-    	if installation_options.install_with_multi_processes
+    	if installation_options.install_with_multi_threads
 	  		if Pod.match_version?('~> 1.4.0')
 	  			install_pod_sources_for_version_in_1_4_0
 	  		elsif Pod.match_version?('~> 1.5')
