@@ -10,12 +10,16 @@ module CBin
       @binary_spec_files ||= Pathname.glob('*.binary.podspec{,.json}')
     end
 
+    def binary_template_spec_files
+      @binary_spec_template_files ||= Pathname.glob('*.binary-template.podspec{,.json}')
+    end 
+
     def binary_template_spec_file
-      @binary_spec_template_file ||= Pathname.glob('*.binary-template.podspec{,.json}').first
+      @binary_spec_template_file ||= binary_template_spec_files.first
     end 
 
     def code_spec_files
-      @code_spec_files ||= spec_files - binary_spec_files - binary_template_spec_file
+      @code_spec_files ||= spec_files - binary_spec_files - binary_template_spec_files
     end
 
     def code_spec 
