@@ -14,11 +14,11 @@ module Pod
     	# 是否警告不安全 source （如 http ）
     	env_option :warn_for_unsecure_source, false
 
-    	# 是否多进程执行 install_pod_sources 
+    	# 是否多线程执行 install_pod_sources 
     	env_option :install_with_multi_threads, true
 
     	# 是否多进程执行 update_repositories
-    	env_option :update_source_with_multi_threads, true
+    	env_option :update_source_with_multi_processes, true
     end
   end
 end

@@ -1,6 +1,8 @@
 require 'cocoapods'
 
 if Pod.match_version?('~> 1.4')
+	require 'cocoapods-bin/native/podfile'
+	require 'cocoapods-bin/native/installation_options'
 	require 'cocoapods-bin/native/specification'
 	require 'cocoapods-bin/native/path_source'
 	require 'cocoapods-bin/native/analyzer'

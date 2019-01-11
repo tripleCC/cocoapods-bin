@@ -9,9 +9,11 @@ module Pod
 			#
 			alias_method :old_update_repositories, :update_repositories
       def update_repositories
-      	if installation_options.update_source_with_multi_threads
+      	if installation_options.update_source_with_multi_processes
 	      	# 并发更新私有源
-	      	Parallel.each(sources, in_threads: 4) do |source|
+	      	# 这里多线程会导致 pod update 额外输出 --verbose 的内容
+	      	# 不知道为什么？
+	      	Parallel.each(sources, in_processes: 4) do |source|
 	          if source.git?
 	            config.sources_manager.update(source.name, true)
 	          else
