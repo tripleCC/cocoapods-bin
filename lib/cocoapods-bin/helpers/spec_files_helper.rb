@@ -15,7 +15,7 @@ module CBin
     end 
 
     def code_spec_files
-      @code_spec_files ||= spec_files - binary_spec_files
+      @code_spec_files ||= spec_files - binary_spec_files - binary_template_spec_file
     end
 
     def code_spec 
