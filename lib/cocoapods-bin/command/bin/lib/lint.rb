@@ -42,7 +42,7 @@ module Pod
               
               if @loose_options
                 argvs << '--allow-warnings'
-                argvs << '--use-libraries' if code_spec.all_dependencies.any?
+                argvs << '--use-libraries' if code_spec&.all_dependencies&.any?
               end
             
               lint = Pod::Command::Lib::Lint.new(CLAide::ARGV.new(argvs))
