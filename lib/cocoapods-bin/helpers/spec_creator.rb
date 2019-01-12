@@ -76,6 +76,8 @@ module CBin
 				spec_hash = @spec.to_hash
 				# spec_hash.delete('license')
 				spec_hash.delete('resource_bundles')
+				spec_hash.delete('exclude_files')
+				spec_hash.delete('preserve_paths')
 
 				# Filter platforms
 				platforms = spec_hash['platforms']
