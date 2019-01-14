@@ -28,6 +28,7 @@ module Pod
             @loose_options = argv.flag?('loose-options')
             @code_dependencies = argv.flag?('code-dependencies')
             @sources = argv.option('sources') || []
+            @podspec = argv.shift_argument
             super
 
             @additional_args = argv.remainder!
@@ -36,6 +37,7 @@ module Pod
           def run 
             Podfile.execute_with_use_binaries(!@code_dependencies) do 
               argvs = [
+                @podspec || code_spec_files.first,
                 "--sources=#{sources_option(@code_dependencies, @sources)}",
                 *@additional_args
               ]
@@ -50,8 +52,6 @@ module Pod
               lint.run
             end
           end
-
-          
         end
       end
     end
