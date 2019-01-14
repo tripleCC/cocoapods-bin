@@ -13,15 +13,12 @@ module Pod
 		if Pod.match_version?('~> 1.4') 
 			old_resolver_specs_by_target = instance_method(:resolver_specs_by_target)
 			define_method(:resolver_specs_by_target) do 
-				resolver_specs_by_target = old_resolver_specs_by_target.bind(self).call()
-
-				# 过滤出用户工程
-				user_specs_by_target = resolver_specs_by_target.reject { |st| st.name.end_with?('_Tests') || st.name == 'Pods' }
+				specs_by_target = old_resolver_specs_by_target.bind(self).call()
 
 				sources_manager = Config.instance.sources_manager
 				use_source_pods = podfile.use_source_pods
 
-				user_specs_by_target.each do |target, rspecs|
+				specs_by_target.each do |target, rspecs|
 					# use_binaries 并且 use_source_pods 不包含
 					use_binary_rspecs = if podfile.use_binaries? || podfile.use_binaries_selector
 																rspecs.select do |rspec| 
@@ -33,7 +30,7 @@ module Pod
 														  end
 
 					# Parallel.map(rspecs, in_threads: 8) do |rspec| 
-					resolver_specs_by_target[target] = rspecs.map do |rspec|
+					specs_by_target[target] = rspecs.map do |rspec|
 						# 含有 subspecs 的组件暂不处理
 						# next rspec if rspec.spec.subspec? || rspec.spec.subspecs.any?
 
@@ -72,7 +69,7 @@ module Pod
 					end.compact
 				end
 
-				resolver_specs_by_target
+				specs_by_target
 			end
 		end
 	end
