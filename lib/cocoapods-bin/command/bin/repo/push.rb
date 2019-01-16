@@ -19,9 +19,9 @@ module Pod
             [
               ['--binary', '发布组件的二进制版本'],
               ['--template-podspec=A.binary-template.podspec', '生成拥有 subspec 的二进制 spec 需要的模版 podspec, 插件会更改 version 和 source'],
-              ['--code-dependencies', '使用源码依赖进行 lint'],
-              ['--loose-options', '添加宽松的 options, 包括 --use-libraries (可能会造成 entry point (start) undefined)'],
               ['--reserve-created-spec', '保留生成的二进制 spec 文件'],
+              ['--code-dependencies', '使用源码依赖进行 lint'],
+              ['--loose-options', '添加宽松的 options, 包括 --use-libraries (可能会造成 entry point (start) undefined)'],s
             ].concat(Pod::Command::Repo::Push.options).concat(super).uniq
           end
 

@@ -10,7 +10,7 @@
 
 使用本插件需要提供以下资源：
 
-- 静态服务器（可参考 [binary-server](https://github.com/tripleCC/binary-server.git)）
+- 静态资源服务器（可参考 [binary-server](https://github.com/tripleCC/binary-server.git)）
 - 源码私有源（保存组件源码版本 podspec）
 - 二进制私有源（保存组件二进制版本 podspec）
 
@@ -64,9 +64,11 @@ binary_download_url: http://iosframeworkserver-shopkeeperclient.app.2dfire.com/d
 
 配置时，不需要手动添加源码和二进制私有源的 repo，插件在找不到对应 repo 时会主动 clone。
 
-插件配置完后，就可以部署静态服务器了。对于静态服务器，这里不做赘述，只提示一点：**`binary_download_url` 需要以资源类型结尾（例子为 zip 类型）**。
+插件配置完后，就可以部署静态资源服务器了。对于静态资源服务器，这里不做赘述，只提示一点：**`binary_download_url` 需要以资源类型结尾（例子为 zip 类型）**。
 
 插件为了保证资源类型的多样性，在生成二进制 podspec 时并没有定死 source 的 `:type` 字段，所以 CocoaPods 只能从 url 中获取资源类型。在下载 http/https 资源时，CocoaPods 会根据路径的 extname 检查资源类型，不符合要求的话（zip、tgz、tar、tbz、txz、dmg）就会直接抛错。这里提到了 **二进制 podspec 的自动生成**，后面会详细介绍。
+
+这里额外说下打包工具 [cocoapods-packager](https://github.com/CocoaPods/cocoapods-packager) 和 [Carthage](https://github.com/Carthage/Carthage/issues) ，前者可以通过 podspec 进行打包，只要保证 lint 通过了，就可以打成 `.framework`，很方便，但是作者几乎不维护了，后者需要结合组件工程。具体使用哪个可以结合自身团队，甚至可以自己写打包脚本。
 
 ## 使用插件
 
@@ -91,20 +93,13 @@ Commands:
     + repo      管理 spec 仓库.
     + search    查找二进制 spec.
     + spec      管理二进制 spec.
-
-Options:
-
-    --silent    Show nothing
-    --verbose   Show more debugging information
-    --no-ansi   Show output without ANSI codes
-    --help      Show help banner of specified command
 ```
 
 ### 二进制 podspec
 
  `cocoapods-bin` 针对一个组件，同时使用了两种 podspec，分别为源码 podspec 和二进制 podspec，这种方式在没有工具支撑的情况下，势必会增加开发者维护组件的工作量。做为开发者来说，我是不希望同时维护两套 podspec 的。为了解决这个问题， 插件提供了自动生成二进制 podspec 功能，开发者依旧只需要关心源码 podspec 即可。
 
-一般来说，在接入插件前，组件源码 podspec 是已经存在的，所以我们只需要向二进制私有源推送组件的二进制 podspec 即可。如果有条件的话，发布二进制和源码版本可以走 GitLab CI ，这也是我推荐的做法。
+一般来说，在接入插件前，组件源码 podspec 是已经存在的，所以我们只需要向二进制私有源推送组件的二进制 podspec 即可。如果有条件的话，二进制和源码  podspec 的发布可以走 GitLab CI ，这也是我推荐的做法。
 
 下面介绍下和二进制 podspec 相关的 `cocoapods-bin` 命令。
 
@@ -127,7 +122,7 @@ Options:
 	...
 ```
 
-`pod bin spec create` 会根据源码 podspec ，创建出二进制 podspec 文件。如果组件存在 subspec 时，插件需要开发者提供 podspec 模版信息，以生成二进制 podspec。插件会根据源码 podspec 更改 podspec 模版中的 version 字段，并且根据插件配置的 `binary_download_url` 生成 source 字段，最终生成二进制 podspec。
+`pod bin spec create` 会根据源码 podspec ，创建出二进制 podspec 文件。如果组件存在 subspec ，需要开发者提供 podspec 模版信息，以生成二进制 podspec。插件会根据源码 podspec 更改模版中的 version 字段，并且根据插件配置的 `binary_download_url` 生成 source 字段，最终生成二进制 podspec。
 
 以 A 组件举例，如果 A 的 podspec 如下：
 
@@ -227,19 +222,16 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 TODO: Add long description of the pod here.
                        DESC
-
   s.homepage         = 'http://git.2dfire-inc.com/ios/A'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'qiandaojiang' => 'qingmu@2dfire.com' }
+  s.author           = { 'qingmu' => 'qingmu@2dfire.com' }
   s.ios.deployment_target = '8.0'
-
   s.subspec "Binary" do |ss|
     ss.vendored_frameworks = "#{s.name}.framework"
     ss.source_files = "#{s.name}.framework/Headers/*", "#{s.name}.framework/Versions/A/Headers/*"
     ss.public_header_files = "#{s.name}.framework/Headers/*", "#{s.name}.framework/Versions/A/Headers/*"
     ss.dependency 'YYModel'
   end
-
   s.subspec 'B' do |ss|
     ss.dependency "#{s.name}/Binary"
   end
@@ -259,7 +251,7 @@ end
     "file": "LICENSE"
   },
   "authors": {
-    "qiandaojiang": "qingmu@2dfire.com"
+    "qingmu": "qingmu@2dfire.com"
   },
   "platforms": {
     "ios": "8.0"
@@ -293,7 +285,149 @@ end
 }
 ```
 
+####  pod bin spec lint
 
+```shell
+➜  ~ pod bin spec lint --help
+Usage:
+
+    $ pod bin spec lint [NAME.podspec|DIRECTORY|http://PATH/NAME.podspec ...]
+
+      spec lint 二进制组件 / 源码组件
+
+Options:
+
+    --binary                                       lint 组件的二进制版本
+    --template-podspec=A.binary-template.podspec   生成拥有 subspec 的二进制 spec 需要的模版
+                                                   podspec, 插件会更改 version 和 source
+    --reserve-created-spec                         保留生成的二进制 spec 文件
+    --code-dependencies                            使用源码依赖进行 lint
+    --loose-options                                添加宽松的 options, 包括 --use-libraries
+                                                   (可能会造成 entry point (start)
+                                                   undefined)
+    ...
+```
+
+`pod bin spec lint` 默认使用二进制依赖进行 lint，在添加 `--binary` 会去 lint 当前组件的二进制 podspec（动态生成）。在添加 `--code-dependencies` 将会使用源码依赖进行 lint ，个人推荐使用二进制依赖 lint，可以极大地减少编译时间。
+
+#### pod bin repo push 
+
+```shell
+
+➜  ~ pod bin repo push --help
+Usage:
+
+    $ pod bin repo push [NAME.podspec]
+
+      发布二进制组件 / 源码组件
+
+Options:
+
+    --binary                                          发布组件的二进制版本
+    --template-podspec=A.binary-template.podspec      生成拥有 subspec 的二进制 spec 需要的模版
+                                                      podspec, 插件会更改 version 和 source
+	--reserve-created-spec                            保留生成的二进制 spec 文件
+    --code-dependencies                               使用源码依赖进行 lint
+    --loose-options                                   添加宽松的 options, 包括
+                                                      --use-libraries (可能会造成 entry
+                                                      point (start) undefined)
+    ...
+```
+
+`pod bin repo push`  用来发布组件，其余特性和 `pod bin spec lint` 一致。
 
 ### Podfile DSL
+
+首先，开发者需要在 Podfile 中需要使用 `plugin 'cocoapods-bin'` 语句引入插件 :
+
+```ruby
+plugin 'cocoapods-bin'
+```
+
+顺带可以删除 Podfile 中的 source ，因为插件内部会自动帮你添加两个私有源。
+
+`cocoapods-bin `插件提供二进制相关的配置语句有 `use_binaries!`、`use_binaries_with_spec_selector!` 以及 `set_use_source_pods`，下面会分别介绍。
+
+#### use_binaries!
+
+全部组件使用二进制版本。
+
+当组件没有二进制版本时，插件会强制工程依赖该组件的源码版本。开发者可以通过执行 `pod install--verbose` option ，在分析依赖步骤查看哪些组件没有二进制版本：
+
+```shell
+...
+Resolving dependencies of `Podfile`
+  【AMapFrameworks | 0.0.4】组件无对应二进制版本 , 将采用源码依赖.
+  【ActivityForRestApp | 0.2.1】组件无对应二进制版本 , 将采用源码依赖.
+  【AssemblyComponent | 0.5.9】组件无对应二进制版本 , 将采用源码依赖.
+  【Bugly | 2.4.6】组件无对应二进制版本 , 将采用源码依赖.
+  【Celebi | 0.6.4】组件无对应二进制版本 , 将采用源码依赖.
+  【CocoaAsyncSocket/RunLoop | 7.4.3】组件无对应二进制版本 , 将采用源码依赖.
+  【CocoaLumberjack | 3.4.1】组件无对应二进制版本 , 将采用源码依赖.
+  【CocoaLumberjack/Default | 3.4.1】组件无对应二进制版本 , 将采用源码依赖.
+  【CocoaLumberjack/Extensions | 3.4.1】组件无对应二进制版本 , 将采用源码依赖.
+  【CodePush | 0.3.1】组件无对应二进制版本 , 将采用源码依赖.
+  【CodePush/Core | 0.3.1】组件无对应二进制版本 , 将采用源码依赖.
+  【CodePush/SSZipArchive | 0.3.1】组件无对应二进制版本 , 将采用源码依赖.
+  【ESExchangeSkin | 0.3.2】组件无对应二进制版本 , 将采用源码依赖.
+...
+```
+
+也可以通过 Podfile.lock 中的 `SPEC REPOS` 字段，查看哪些组件采用了源码版本，哪些采用了二进制版本：
+
+```yaml
+...
+SPEC REPOS:
+  "git@git.2dfire.net:ios/cocoapods-spec-binary.git":
+    - AFNetworking
+    - Aspects
+    - CocoaSecurity
+    - DACircularProgress
+   ...
+  "git@git.2dfire.net:ios/cocoapods-spec.git":
+    - ActivityForRestApp
+    - AMapFrameworks
+    - AssemblyComponent
+    ...
+...
+```
+
+#### use_binaries_with_spec_selector!
+
+过滤出需要使用二进制版本组件。
+
+假如开发者只需要 `YYModel` 的二进制版本，那么他可以在 Podfile 中添加以下代码：
+
+```ruby
+use_binaries_with_spec_selector! do |spec|
+  spec.name == 'YYModel'
+end
+```
+
+一个实际应用是，三方组件采用二进制版本，团队编写的组件依旧采用源码版本。如果三方组件都在 `cocoapods-repo` 组下，就可以使用以下代码过滤出三方组件：
+
+```ruby
+use_binaries_with_spec_selector! do |spec|
+ git = spec.source && spec.source['git']
+ git && git.include?('cocoapods-repo')
+end
+```
+
+#### set_use_source_pods
+
+设置使用源码版本的组件。
+
+实际开发中，可能需要查看 YYModel 组件的源码，这时候可以这么设置：
+
+```ruby
+set_use_source_pods ['YYModel']
+```
+
+#### 其他设置
+
+插件默认开启多线程下载组件资源，如果要禁用这个功能，Podfile 添加以下代码即可：
+
+```ruby
+install! 'cocoapods', { install_with_multi_threads: true }
+```
 
