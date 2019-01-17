@@ -32,7 +32,7 @@ module Pod
 			@installed_specs = []
       pods_to_install = sandbox_state.added | sandbox_state.changed
       title_options = { :verbose_prefix => '-> '.green }
-      Parallel.each(root_specs.sort_by(&:name), in_threads: 10) do |spec|
+      Parallel.each(root_specs.sort_by(&:name), in_threads: 4) do |spec|
         if pods_to_install.include?(spec.name)
           if sandbox_state.changed.include?(spec.name) && sandbox.manifest
             previous = sandbox.manifest.version(spec.name)
@@ -57,7 +57,7 @@ module Pod
       title_options = { :verbose_prefix => '-> '.green }
       # 多进程下载，多线程时 log 会显著交叉，多进程好点，但是多进程需要利用文件锁对 cache 进行保护
       # in_processes: 10
-      Parallel.each(root_specs.sort_by(&:name), in_threads: 10) do |spec|
+      Parallel.each(root_specs.sort_by(&:name), in_threads: 4) do |spec|
         if pods_to_install.include?(spec.name)
           if sandbox_state.changed.include?(spec.name) && sandbox.manifest
             current_version = spec.version
