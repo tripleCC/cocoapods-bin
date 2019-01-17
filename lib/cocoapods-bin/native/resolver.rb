@@ -18,6 +18,7 @@ module Pod
 				sources_manager = Config.instance.sources_manager
 				use_source_pods = podfile.use_source_pods
 
+				missing_binary_specs = []
 				specs_by_target.each do |target, rspecs|
 					# use_binaries 并且 use_source_pods 不包含
 					use_binary_rspecs = if podfile.use_binaries? || podfile.use_binaries_selector
@@ -61,13 +62,17 @@ module Pod
 							rspec
 						rescue Pod::StandardError => error 	
 							# 没有从新的 source 找到对应版本组件，直接返回原 rspec
-							UI.message "【#{rspec.spec.name} | #{spec_version}】组件无对应二进制版本 , 将采用源码依赖." if use_binary#.yellow 
+							missing_binary_specs << rspec.spec if use_binary
 							rspec
 						end
 
 						rspec 
 					end.compact
 				end
+
+				missing_binary_specs.uniq.each do |spec| 
+					UI.message "【#{spec.name} | #{spec.version}】组件无对应二进制版本 , 将采用源码依赖." 
+				end if missing_binary_specs.any?
 
 				specs_by_target
 			end
