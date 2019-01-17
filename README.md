@@ -231,7 +231,7 @@ TODO: Add long description of the pod here.
     ss.source_files = "#{s.name}.framework/Headers/*", "#{s.name}.framework/Versions/A/Headers/*"
     ss.public_header_files = "#{s.name}.framework/Headers/*", "#{s.name}.framework/Versions/A/Headers/*"
     # 结合实际打包后的资源产出文件类型编写
-    # ss.resources = "#{s.name}.framework/Resources/*", "#{s.name}.framework/Versions/A/Resources/*”
+    # ss.resources = "#{s.name}.framework/Resources/*", "#{s.name}.framework/Versions/A/Resources/*"
     ss.dependency 'YYModel'
   end
   s.subspec 'B' do |ss|
