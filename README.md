@@ -226,18 +226,20 @@ TODO: Add long description of the pod here.
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'qingmu' => 'qingmu@2dfire.com' }
   s.ios.deployment_target = '8.0'
+
   s.subspec "Binary" do |ss|
     ss.vendored_frameworks = "#{s.name}.framework"
     ss.source_files = "#{s.name}.framework/Headers/*", "#{s.name}.framework/Versions/A/Headers/*"
     ss.public_header_files = "#{s.name}.framework/Headers/*", "#{s.name}.framework/Versions/A/Headers/*"
     # 结合实际打包后的资源产出文件类型编写
-    # ss.resources = "#{s.name}.framework/Resources/*", "#{s.name}.framework/Versions/A/Resources/*"
-    ss.dependency 'YYModel'
+    ss.resources = "#{s.name}.framework/Resources/*.{bundle}", "#{s.name}.framework/Versions/A/Resources/*.{bundle}"
   end
+
   s.subspec 'B' do |ss|
     ss.dependency "#{s.name}/Binary"
   end
 end
+
 ```
 
 最终生成的二进制 podspec 如下：
@@ -273,6 +275,10 @@ end
       "public_header_files": [
         "A.framework/Headers/*",
         "A.framework/Versions/A/Headers/*"
+      ],
+      "resources": [
+        "A.framework/Resources/*.{bundle}",
+        "A.framework/Versions/A/Resources/*.{bundle}"
       ]
     },
     {
@@ -285,6 +291,7 @@ end
     }
   ]
 }
+
 ```
 
 ####  pod bin spec lint
