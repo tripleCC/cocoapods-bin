@@ -31,21 +31,21 @@
 
 开始设置二进制化初始信息.
 所有的信息都会保存在 /Users/songruiwang/.cocoapods/bin.yml 文件中.
-你可以在对应目录下手动添加编辑该文件. 文件包含的配置信息如下：
+你可以在对应目录下手动添加编辑该文件. 文件包含的配置信息样式如下：
 
 ---
-code_repo_url: 源码私有源 Git 地址，如> git@git.2dfire.net:ios/cocoapods-spec.git
-binary_repo_url: 二进制私有源 Git 地址，如> git@git.2dfire.net:ios/cocoapods-spec-binary.git
-binary_download_url: 二进制下载地址，内部会依次传入组件名称与版本，替换字符串中的 %s ，如> http://iosframeworkserver-shopkeeperclient.app.2dfire.com/download/%s/%s.zip
+code_repo_url: git@git.2dfire.net:ios/cocoapods-spec.git
+binary_repo_url: git@git.2dfire.net:ios/cocoapods-spec-binary.git
+binary_download_url: http://iosframeworkserver-shopkeeperclient.app.2dfire.com/download/%s/%s.zip
+download_file_type: zip
 
 
-源码私有源 Git 地址，如> git@git.2dfire.net:ios/cocoapods-spec.git
+源码私有源 Git 地址
 旧值：git@git.2dfire.net:ios/cocoapods-spec.git
  >
-
 ```
 
-按提示输入源码私有源、二进制私有源、二进制下载地址后，插件就配置完成了。
+按提示输入源码私有源、二进制私有源、二进制下载地址、下载文件类型后，插件就配置完成了。
 
 `cococapod-bin` 也支持从 url 下载配置文件，方便对多台机器进行配置：
 
@@ -60,13 +60,12 @@ binary_download_url: 二进制下载地址，内部会依次传入组件名称�
 code_repo_url: git@git.2dfire.net:ios/cocoapods-spec.git
 binary_repo_url: git@git.2dfire.net:ios/cocoapods-spec-binary.git
 binary_download_url: http://iosframeworkserver-shopkeeperclient.app.2dfire.com/download/%s/%s.zip
+download_file_type: zip
 ```
 
 配置时，不需要手动添加源码和二进制私有源的 repo，插件在找不到对应 repo 时会主动 clone。
 
-插件配置完后，就可以部署静态资源服务器了。对于静态资源服务器，这里不做赘述，只提示一点：**`binary_download_url` 需要以资源类型结尾（例子为 zip 类型）**。
-
-插件为了保证资源类型的多样性，在生成二进制 podspec 时并没有定死 source 的 `:type` 字段，所以 CocoaPods 只能从 url 中获取资源类型。在下载 http/https 资源时，CocoaPods 会根据路径的 extname 检查资源类型，不符合要求的话（zip、tgz、tar、tbz、txz、dmg）就会直接抛错。这里提到了 **二进制 podspec 的自动生成**，后面会详细介绍。
+插件配置完后，就可以部署静态资源服务器了。对于静态资源服务器，这里不做赘述，只提示一点：在生成二进制 podspec 时，插件会根据 `download_file_type` 设置 source 的 `:type` 字段。在下载 http/https 资源时，CocoaPods 会根据 `:type` 字段的类型采取相应的解压方式，如果设置错误就会抛错。这里提到了 **二进制 podspec 的自动生成**，后面会详细介绍。
 
 这里额外说下打包工具 [cocoapods-packager](https://github.com/CocoaPods/cocoapods-packager) 和 [Carthage](https://github.com/Carthage/Carthage/issues) ，前者可以通过 podspec 进行打包，只要保证 lint 通过了，就可以打成 `.framework`，很方便，但是作者几乎不维护了，后者需要结合组件工程。具体使用哪个可以结合自身团队，甚至可以自己写打包脚本。
 
@@ -164,7 +163,8 @@ end
     "qingmu": "qingmu@2dfire.com"
   },
   "source": {
-    "http": "http://iosframeworkserver-shopkeeperclient.app.2dfire.com/download/A/0.1.0.zip"
+    "http": "http://iosframeworkserver-shopkeeperclient.app.2dfire.com/download/A/0.1.0.zip",
+    "type": "zip"
   },
   "platforms": {
     "ios": "8.0"
@@ -262,7 +262,8 @@ end
   },
   "version": "0.1.0",
   "source": {
-    "http": "http://iosframeworkserver-shopkeeperclient.app.2dfire.com/download/A/0.1.0.zip"
+    "http": "http://iosframeworkserver-shopkeeperclient.app.2dfire.com/download/A/0.1.0.zip",
+    "type": "zip"
   },
   "subspecs": [
     {

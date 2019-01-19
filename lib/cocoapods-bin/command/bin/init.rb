@@ -54,7 +54,7 @@ module Pod
           template_hash = CBin.config.template_hash
           template_hash.each do |k, v|
             default = CBin.config.send(k) rescue nil
-            config[k] = asker.ask_with_answer(v, default)
+            config[k] = asker.ask_with_answer(v[:description], default, v[:selection])
           end
 
           CBin.config.sync_config(config)
