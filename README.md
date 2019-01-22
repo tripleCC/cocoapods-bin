@@ -6,7 +6,7 @@
 
 本插件所关联的组件二进制化策略：
 
-预先将打包成  `.a` 或者 `.framework` 的组件（接入此插件必须使用 `.framework`）保存到静态服务器上，并在 `install` 时，去下载组件对应的二进制版本，以减少组件编译时间，达到加快 App 打包、组件 lint、组件发布等操作的目的。
+预先将打包成  `.a` 或者 `.framework` 的组件（目前接入此插件必须使用 `.framework`）保存到静态服务器上，并在 `install` 时，去下载组件对应的二进制版本，以减少组件编译时间，达到加快 App 打包、组件 lint、组件发布等操作的目的。
 
 使用本插件需要提供以下资源：
 
@@ -45,7 +45,7 @@ download_file_type: zip
  >
 ```
 
-按提示输入源码私有源、二进制私有源、二进制下载地址、下载文件类型后，插件就配置完成了。
+按提示输入源码私有源、二进制私有源、二进制下载地址、下载文件类型后，插件就配置完成了。其中 `binary_download_url` 需要预留组件名称与组件版本占位符，插件内部会依次替换 `%s` 为相应组件的值。
 
 `cococapod-bin` 也支持从 url 下载配置文件，方便对多台机器进行配置：
 
@@ -206,7 +206,7 @@ TODO: Add long description of the pod here.
       'A' => ['A/Assets/*']
   }
   s.subspec 'B' do |ss|
-	ss.dependency 'YYModel'
+    ss.dependency 'YYModel'
     ss.source_files = 'A/Classes/**/*'
   end
 end
@@ -233,6 +233,7 @@ TODO: Add long description of the pod here.
     ss.public_header_files = "#{s.name}.framework/Headers/*", "#{s.name}.framework/Versions/A/Headers/*"
     # 结合实际打包后的资源产出文件类型编写
     ss.resources = "#{s.name}.framework/Resources/*.{bundle}", "#{s.name}.framework/Versions/A/Resources/*.{bundle}"
+    ss.dependency 'YYModel'
   end
 
   s.subspec 'B' do |ss|
@@ -280,7 +281,12 @@ end
       "resources": [
         "A.framework/Resources/*.{bundle}",
         "A.framework/Versions/A/Resources/*.{bundle}"
-      ]
+      ],
+      "dependencies": {
+        "YYModel": [
+
+        ]
+      }
     },
     {
       "name": "B",
@@ -292,10 +298,9 @@ end
     }
   ]
 }
-
 ```
 
-####  pod bin spec lint
+#### pod bin spec lint
 
 ```shell
 ➜  ~ pod bin spec lint --help
@@ -431,6 +436,20 @@ end
 
 ```ruby
 set_use_source_pods ['YYModel']
+```
+
+如果 CocoaPods 版本为 1.5.3 ，终端会输出以下内容，表示 YYModel 的参照源从二进制私有源切换到了源码私有源：
+
+```shell
+Analyzing dependencies
+Fetching podspec for `A` from `../`
+Downloading dependencies
+Using A (0.1.0)
+Installing YYModel 1.0.4.2 (source changed to `git@git.2dfire.net:ios/cocoapods-spec.git` from `git@git.2dfire.net:ios/cocoapods-spec-binary.git`)
+Generating Pods project
+Integrating client project
+Sending stats
+Pod installation complete! There is 1 dependency from the Podfile and 2 total pods installed.
 ```
 
 #### 其他设置
