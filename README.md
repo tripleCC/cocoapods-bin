@@ -36,14 +36,14 @@
 你可以在对应目录下手动添加编辑该文件. 文件包含的配置信息样式如下：
 
 ---
-code_repo_url: git@git.2dfire.net:ios/cocoapods-spec.git
-binary_repo_url: git@git.2dfire.net:ios/cocoapods-spec-binary.git
+code_repo_url: git@git.xxxxxx.net:ios/cocoapods-spec.git
+binary_repo_url: git@git.xxxxxx.net:ios/cocoapods-spec-binary.git
 binary_download_url: http://iosframeworkserver-shopkeeperclient.app.2dfire.com/download/%s/%s.zip
 download_file_type: zip
 
 
 源码私有源 Git 地址
-旧值：git@git.2dfire.net:ios/cocoapods-spec.git
+旧值：git@git.xxxxxx.net:ios/cocoapods-spec.git
  >
 ```
 
@@ -52,15 +52,15 @@ download_file_type: zip
 `cococapod-bin` 也支持从 url 下载配置文件，方便对多台机器进行配置：
 
 ```shell
-➜  ~ pod bin init --bin-url=http://git.2dfire.net/qingmu/cocoapods-tdfire-binary-config/raw/master/bin.yml
+➜  ~ pod bin init --bin-url=http://git.xxxxxx.net/qingmu/cocoapods-tdfire-binary-config/raw/master/bin.yml
 ```
 
 配置文件模版内容如下，根据不同团队的需求定制即可：
 
 ```yaml
 ---
-code_repo_url: git@git.2dfire.net:ios/cocoapods-spec.git
-binary_repo_url: git@git.2dfire.net:ios/cocoapods-spec-binary.git
+code_repo_url: git@git.xxxxxx.net:ios/cocoapods-spec.git
+binary_repo_url: git@git.xxxxxx.net:ios/cocoapods-spec-binary.git
 binary_download_url: http://iosframeworkserver-shopkeeperclient.app.2dfire.com/download/%s/%s.zip
 download_file_type: zip
 ```
@@ -395,13 +395,13 @@ Resolving dependencies of `Podfile`
 ```yaml
 ...
 SPEC REPOS:
-  "git@git.2dfire.net:ios/cocoapods-spec-binary.git":
+  "git@git.xxxxxx.net:ios/cocoapods-spec-binary.git":
     - AFNetworking
     - Aspects
     - CocoaSecurity
     - DACircularProgress
    ...
-  "git@git.2dfire.net:ios/cocoapods-spec.git":
+  "git@git.xxxxxx.net:ios/cocoapods-spec.git":
     - ActivityForRestApp
     - AMapFrameworks
     - AssemblyComponent
@@ -447,7 +447,7 @@ Analyzing dependencies
 Fetching podspec for `A` from `../`
 Downloading dependencies
 Using A (0.1.0)
-Installing YYModel 1.0.4.2 (source changed to `git@git.2dfire.net:ios/cocoapods-spec.git` from `git@git.2dfire.net:ios/cocoapods-spec-binary.git`)
+Installing YYModel 1.0.4.2 (source changed to `git@git.xxxxxx.net:ios/cocoapods-spec.git` from `git@git.xxxxxx.net:ios/cocoapods-spec-binary.git`)
 Generating Pods project
 Integrating client project
 Sending stats
