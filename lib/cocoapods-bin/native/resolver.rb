@@ -7,6 +7,27 @@ require 'cocoapods-bin/gem_version'
 
 module Pod
   class Resolver
+
+    def specifications_for_dependency(dependency, additional_requirements = [])
+      requirement = Requirement.new(dependency.requirement.as_list + additional_requirements.flat_map(&:as_list))
+      requirement = Requirement.new(dependency.requirement.as_list.map { |r| r + '.a' } + additional_requirements.flat_map(&:as_list)) if podfile.allow_prerelease? && !requirement.prerelease?
+      find_cached_set(dependency).
+        all_specifications(installation_options.warn_for_multiple_pod_sources).
+        select { |s| requirement.satisfied_by? s.version }.
+        map { |s| s.subspec_by_name(dependency.name, false, true) }.
+        compact
+    end
+
+    def requirement_satisfied_by?(requirement, activated, spec)
+      version = spec.version
+      return false unless requirement.requirement.satisfied_by?(version)
+      shared_possibility_versions, prerelease_requirement = possibility_versions_for_root_name(requirement, activated)
+      return false if !shared_possibility_versions.empty? && !shared_possibility_versions.include?(version)
+      return false if !podfile.allow_prerelease? && version.prerelease? && !prerelease_requirement
+      return false unless spec_is_platform_compatible?(activated, requirement, spec)
+      true
+    end
+
     # >= 1.4.0 才有 resolver_specs_by_target 以及 ResolverSpecification
     # >= 1.5.0 ResolverSpecification 才有 source，供 install 或者其他操作时，输入 source 变更
     # 
