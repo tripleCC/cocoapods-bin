@@ -21,6 +21,7 @@ module Pod
             [
               ['--code-dependencies', '使用源码依赖进行 lint'],
               ['--loose-options', '添加宽松的 options, 包括 --use-libraries (可能会造成 entry point (start) undefined)'],
+              ['--allow-prerelease', '允许使用 prerelease 的版本 lint']
             ].concat(Pod::Command::Lib::Lint.options).concat(super).uniq
           end
 
@@ -28,6 +29,7 @@ module Pod
             @loose_options = argv.flag?('loose-options')
             @code_dependencies = argv.flag?('code-dependencies')
             @sources = argv.option('sources') || []
+            @allow_prerelease = argv.flag?('allow-prerelease')
             @podspec = argv.shift_argument
             super
 
@@ -35,21 +37,23 @@ module Pod
           end
 
           def run 
-            Podfile.execute_with_use_binaries(!@code_dependencies) do 
-              argvs = [
-                @podspec || code_spec_files.first,
-                "--sources=#{sources_option(@code_dependencies, @sources)}",
-                *@additional_args
-              ]
+            Podfile.execute_with_allow_prerelease(@allow_prerelease) do 
+              Podfile.execute_with_use_binaries(!@code_dependencies) do 
+                argvs = [
+                  @podspec || code_spec_files.first,
+                  "--sources=#{sources_option(@code_dependencies, @sources)}",
+                  *@additional_args
+                ]
+                
+                if @loose_options
+                  argvs << '--allow-warnings'
+                  argvs << '--use-libraries' if code_spec&.all_dependencies&.any?
+                end
               
-              if @loose_options
-                argvs << '--allow-warnings'
-                argvs << '--use-libraries' if code_spec&.all_dependencies&.any?
+                lint = Pod::Command::Lib::Lint.new(CLAide::ARGV.new(argvs))
+                lint.validate!
+                lint.run
               end
-            
-              lint = Pod::Command::Lib::Lint.new(CLAide::ARGV.new(argvs))
-              lint.validate!
-              lint.run
             end
           end
         end

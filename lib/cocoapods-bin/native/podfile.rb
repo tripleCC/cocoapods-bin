@@ -31,6 +31,10 @@ module Pod
     end
 
     module ENVExecutor
+      def execute_with_allow_prerelease(allow_prerelease, &block)
+        execute_with_key(ALLOW_PRERELEASE, -> { allow_prerelease ? 'true' : 'false' }, &block)
+      end
+      
       def execute_with_use_binaries(use_binaries, &block)
         execute_with_key(USE_BINARIES, -> { use_binaries ? 'true' : 'false' }, &block)
       end

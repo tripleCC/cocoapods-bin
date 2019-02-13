@@ -21,7 +21,8 @@ module Pod
               ['--template-podspec=A.binary-template.podspec', '生成拥有 subspec 的二进制 spec 需要的模版 podspec, 插件会更改 version 和 source'],
               ['--reserve-created-spec', '保留生成的二进制 spec 文件'],
               ['--code-dependencies', '使用源码依赖进行 lint'],
-              ['--loose-options', '添加宽松的 options, 包括 --use-libraries (可能会造成 entry point (start) undefined)'],s
+              ['--loose-options', '添加宽松的 options, 包括 --use-libraries (可能会造成 entry point (start) undefined)'],
+              ['--allow-prerelease', '允许使用 prerelease 的版本 lint']
             ].concat(Pod::Command::Repo::Push.options).concat(super).uniq
           end
 
@@ -33,29 +34,32 @@ module Pod
             @sources = argv.option('sources') || []
             @reserve_created_spec = argv.flag?('reserve-created-spec')
             @template_podspec = argv.option('template-podspec')
+            @allow_prerelease = argv.flag?('allow-prerelease')
             super
 
             @additional_args = argv.remainder!
           end
 
           def run 
-            Podfile.execute_with_use_binaries(!@code_dependencies) do 
-              argvs = [
-                repo,
-                "--sources=#{sources_option(@code_dependencies, @sources)}",
-                *@additional_args
-              ]
+            Podfile.execute_with_allow_prerelease(@allow_prerelease) do 
+              Podfile.execute_with_use_binaries(!@code_dependencies) do 
+                argvs = [
+                  repo,
+                  "--sources=#{sources_option(@code_dependencies, @sources)}",
+                  *@additional_args
+                ]
 
-              argvs << spec_file if spec_file
+                argvs << spec_file if spec_file
 
-              if @loose_options
-                argvs += ['--allow-warnings', '--use-json']
-                argvs << '--use-libraries' if code_spec&.all_dependencies&.any?
+                if @loose_options
+                  argvs += ['--allow-warnings', '--use-json']
+                  argvs << '--use-libraries' if code_spec&.all_dependencies&.any?
+                end
+              
+                push = Pod::Command::Repo::Push.new(CLAide::ARGV.new(argvs))
+                push.validate!
+                push.run
               end
-            
-              push = Pod::Command::Repo::Push.new(CLAide::ARGV.new(argvs))
-              push.validate!
-              push.run
             end
           ensure
             clear_binary_spec_file_if_needed unless @reserve_created_spec
