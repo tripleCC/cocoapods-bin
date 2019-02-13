@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = CBin::VERSION
   spec.authors       = ['tripleCC']
   spec.email         = ['triplec.linux@gmail.com']
-  spec.description   = %q{cocoapods pods source switcher.}
+  spec.description   = %q{cocoapods-bin is a plugin which helps develpers switching pods between source code and binary.}
   spec.summary       = %q{cocoapods-bin is a plugin which helps develpers switching pods between source code and binary.}
   spec.homepage      = 'https://github.com/tripleCC/cocoapods-bin'
   spec.license       = 'MIT'
