@@ -10,6 +10,7 @@ module Pod
 
     if Pod.match_version?('~> 1.4') 
       def specifications_for_dependency(dependency, additional_requirements = [])
+        additional_requirements.compact!
         requirement = Requirement.new(dependency.requirement.as_list + additional_requirements.flat_map(&:as_list))
         requirement = Requirement.new(dependency.requirement.as_list.map { |r| r + '.a' } + additional_requirements.flat_map(&:as_list)) if podfile.allow_prerelease? && !requirement.prerelease?
         find_cached_set(dependency).
