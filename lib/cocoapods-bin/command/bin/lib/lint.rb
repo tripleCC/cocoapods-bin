@@ -1,5 +1,5 @@
 require 'cocoapods-bin/config/config'
-require 'cocoapods-bin/native'
+require 'cocoapods-bin/native/podfile'
 
 module Pod
   class Command
