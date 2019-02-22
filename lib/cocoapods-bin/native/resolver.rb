@@ -8,6 +8,27 @@ require 'cocoapods-bin/gem_version'
 module Pod
   class Resolver
 
+    if Pod.match_version?('~> 1.6')
+      # 其实不用到 resolver_specs_by_target 再改 spec
+      # 在这个方法里面，通过修改 dependency 的 source 应该也可以
+      # 就是有一点，如果改了之后，对应的 source 没有符合 dependency 的版本
+      # 分析依赖阶段就会报错了，没法像 resolver_specs_by_target 一样
+      # 没有对应的二进制版本时还可以转到源码源码
+      #
+      def aggregate_for_dependency(dependency)
+        sources_manager = Config.instance.sources_manager
+        if dependency && dependency.podspec_repo
+          sources_manager.aggregate_for_dependency(dependency)
+        # 采用 lock 中的 source ，会导致插件对 source 的先后调整失效
+        # elsif (locked_vertex = @locked_dependencies.vertex_named(dependency.name)) && (locked_dependency = locked_vertex.payload) && locked_dependency.podspec_repo
+        #   sources_manager.aggregate_for_dependency(locked_dependency)
+        else
+          @aggregate ||= Source::Aggregate.new(sources)
+        end
+      end
+    end
+
+
     if Pod.match_version?('~> 1.4') 
       def specifications_for_dependency(dependency, additional_requirements = [])
         additional_requirements.compact!
