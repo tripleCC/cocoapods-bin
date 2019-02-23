@@ -1,11 +1,8 @@
 require 'cocoapods'
+require 'cocoapods-bin/native/podfile_env'
 
 module Pod
   class Podfile
-    USE_BINARIES = 'use_binaries'.freeze
-    USE_SOURCE_PODS = 'use_source_pods'.freeze
-    USE_BINARIES_SELECTOR = 'use_binaries_selector'.freeze
-    ALLOW_PRERELEASE = 'allow_prerelease'.freeze
     # TREAT_DEVELOPMENTS_AS_NORMAL = 'treat_developments_as_normal'.freeze
 
     module DSL
@@ -30,26 +27,18 @@ module Pod
       end
     end
 
-    module ENVExecutor
-      def execute_with_allow_prerelease(allow_prerelease, &block)
-        execute_with_key(ALLOW_PRERELEASE, -> { allow_prerelease ? 'true' : 'false' }, &block)
-      end
-      
-      def execute_with_use_binaries(use_binaries, &block)
-        execute_with_key(USE_BINARIES, -> { use_binaries ? 'true' : 'false' }, &block)
-      end
-
-      def execute_with_key(key, value_returner, &block)
-        origin_value = ENV[key]
-        ENV[key] = value_returner.call
-
-        yield if block_given?
-
-        ENV[key] = origin_value
+    alias_method :old_plugins, :plugins 
+    def plugins
+      if ENV[USE_PLUGINS]
+        env_plugins = ENV[USE_PLUGINS].split(',').reduce({}) do |result, name| 
+          result[name] = {} 
+          result
+        end
+        env_plugins.merge!(old_plugins)
+      else 
+        old_plugins
       end
     end
-
-    extend ENVExecutor
 
     def use_binaries_selector
       get_internal_hash_value(USE_BINARIES_SELECTOR, nil)
@@ -68,8 +57,14 @@ module Pod
     end
 
     private
+    def valid_bin_plugin
+      raise Pod::Informative, 'You should add `plugin \'cocoapods-bin\'` before using its DSL' unless plugins.keys.include?('cocoapods-bin')
+    end
+
     # set_hash_value 有 key 限制
     def set_internal_hash_value(key, value)
+      valid_bin_plugin
+
       internal_hash[key] = value
     end
 

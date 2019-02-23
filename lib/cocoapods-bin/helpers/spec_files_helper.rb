@@ -1,4 +1,5 @@
-require 'cocoapods-bin/native'
+require 'cocoapods-bin/native/sources_manager.rb'
+require 'cocoapods-bin/helpers/spec_creator'
 
 module CBin
 	module SpecFilesHelper

@@ -1,4 +1,4 @@
-require 'cocoapods-bin/native'
+require 'cocoapods-bin/native/sources_manager.rb'
 
 module CBin
 	module SourcesHelper

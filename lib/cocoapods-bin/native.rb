@@ -15,5 +15,3 @@ if Pod.match_version?('~> 1.4')
 	require 'cocoapods-bin/native/acknowledgements'
 	require 'cocoapods-bin/native/sandbox_analyzer'
 end
-
-require 'cocoapods-bin/native/source_provider_hook'

@@ -41,23 +41,25 @@ module Pod
           end
 
           def run 
-            Podfile.execute_with_allow_prerelease(@allow_prerelease) do 
-              Podfile.execute_with_use_binaries(!@code_dependencies) do 
-                argvs = [
-                  "--sources=#{sources_option(@code_dependencies, @sources)}",
-                  *@additional_args
-                ]
+            Podfile.execute_with_bin_plugin do
+              Podfile.execute_with_allow_prerelease(@allow_prerelease) do 
+                Podfile.execute_with_use_binaries(!@code_dependencies) do 
+                  argvs = [
+                    "--sources=#{sources_option(@code_dependencies, @sources)}",
+                    *@additional_args
+                  ]
 
-                argvs << spec_file if spec_file
+                  argvs << spec_file if spec_file
 
-                if @loose_options
-                  argvs += ['--allow-warnings']
-                  argvs << '--use-libraries' if code_spec&.all_dependencies&.any?
+                  if @loose_options
+                    argvs += ['--allow-warnings']
+                    argvs << '--use-libraries' if code_spec&.all_dependencies&.any?
+                  end
+
+                  lint = Pod::Command::Spec::Lint.new(CLAide::ARGV.new(argvs))
+                  lint.validate!
+                  lint.run
                 end
-
-                lint = Pod::Command::Spec::Lint.new(CLAide::ARGV.new(argvs))
-                lint.validate!
-                lint.run
               end
             end
           ensure
