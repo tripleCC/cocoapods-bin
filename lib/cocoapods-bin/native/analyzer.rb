@@ -4,6 +4,28 @@ require 'cocoapods'
 module Pod
   class Installer
     class Analyzer
+
+      # > 1.6.0
+      # all_specs[dep.name] 为 nil 会崩溃
+      # 主要原因是 all_specs 分析错误
+      # 查看 source 是否正确
+      #
+      # def dependencies_for_specs(specs, platform, all_specs)
+      #   return [] if specs.empty? || all_specs.empty?
+
+      #   dependent_specs = Set.new
+
+      #   specs.each do |s|
+      #     s.dependencies(platform).each do |dep|
+      #       all_specs[dep.name].each do |spec|
+      #         dependent_specs << spec
+      #       end
+      #     end
+      #   end
+
+      #   dependent_specs - specs
+      # end
+
       # > 1.5.3 版本
       # rewrite update_repositories
       #
