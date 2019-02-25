@@ -39,6 +39,8 @@ module Pod
       DESC
 
       def initialize(argv)
+        require 'cocoapods-bin/native'
+        
         @help = argv.flag?('help')
         super 
       end
