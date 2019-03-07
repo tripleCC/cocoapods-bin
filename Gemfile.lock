@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cocoapods-bin (0.1.10)
+    cocoapods-bin (0.1.11)
       cocoapods (~> 1.4)
       parallel
 
