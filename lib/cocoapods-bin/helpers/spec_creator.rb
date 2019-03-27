@@ -54,7 +54,7 @@ module CBin
       def create_from_code_spec
         @spec = code_spec.dup
         # vendored_frameworks | resources | source | source_files | public_header_files
-        # license | resource_bundles
+        # license | resource_bundles | vendored_libraries
 
         # Project Linkin
         @spec.vendored_frameworks = "#{code_spec.root.name}.framework"
@@ -78,6 +78,15 @@ module CBin
         spec_hash.delete('resource_bundles')
         spec_hash.delete('exclude_files')
         spec_hash.delete('preserve_paths')
+        # 这里不确定 vendored_libraries 指定的时动态/静态库
+        # 如果是静态库的话，需要移除，否则就不移除
+        # 最好是静态库都独立成 Pod ，cocoapods-package 去 collect 目标文件时好做过滤
+        # 这里统一只对命名后缀 .a 文件做处理
+        # spec_hash.delete('vendored_libraries')
+        # libraries 只能假设为动态库不做处理了，如果有例外，需要开发者自行处理
+        vendored_libraries = spec_hash.delete('vendored_libraries')
+        vendored_libraries = Array(vendored_libraries).reject { |l| l.end_with?('.a') } 
+        spec_hash['vendored_libraries'] = vendored_libraries if vendored_libraries.any?
 
         # Filter platforms
         platforms = spec_hash['platforms']
