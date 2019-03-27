@@ -215,7 +215,7 @@ end
 
 ```
 
-那么就需要开发者提供 `A.binary-templte.podspec`（此模版中的写法假定组件的所有 subspec 都打进一个 `.framework` 里，如果 subpsec 都有属于自己的 `.framework` ，就可以采用其他写法。） ：
+那么就需要开发者提供 `A.binary-template.podspec`（此模版中的写法假定组件的所有 subspec 都打进一个 `.framework` 里，如果 subpsec 都有属于自己的 `.framework` ，就可以采用其他写法。） ：
 
 ```ruby
 Pod::Spec.new do |s|
