@@ -80,7 +80,7 @@ module CBin
         spec_hash.delete('preserve_paths')
         # 这里不确定 vendored_libraries 指定的时动态/静态库
         # 如果是静态库的话，需要移除，否则就不移除
-        # 最好是静态库都独立成 Pod ，cocoapods-package 去 collect 目标文件时好做过滤
+        # 最好是静态库都独立成 Pod ，cocoapods-package 打静态库去 collect 目标文件时好做过滤
         # 这里统一只对命名后缀 .a 文件做处理
         # spec_hash.delete('vendored_libraries')
         # libraries 只能假设为动态库不做处理了，如果有例外，需要开发者自行处理
