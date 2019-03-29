@@ -96,6 +96,9 @@ module Pod
             source = use_binary ? sources_manager.binary_source : sources_manager.code_source 
 
             spec_version = rspec.spec.version
+
+            UI.message "- 开始处理 #{rspec.spec.name} #{spec_version} 组件." 
+
             begin
               # 从新 source 中获取 spec
               specification = source.specification(rspec.root.name, spec_version)   
