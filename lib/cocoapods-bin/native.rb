@@ -14,4 +14,5 @@ if Pod.match_version?('~> 1.4')
 	require 'cocoapods-bin/native/validator'
 	require 'cocoapods-bin/native/acknowledgements'
 	require 'cocoapods-bin/native/sandbox_analyzer'
+	require 'cocoapods-bin/native/podspec_finder'
 end
