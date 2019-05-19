@@ -459,6 +459,6 @@ Pod installation complete! There is 1 dependency from the Podfile and 2 total po
 插件默认开启多线程下载组件资源，如果要禁用这个功能，Podfile 添加以下代码即可：
 
 ```ruby
-install! 'cocoapods', { install_with_multi_threads: true }
+install! 'cocoapods', { install_with_multi_threads: false }
 ```
 
