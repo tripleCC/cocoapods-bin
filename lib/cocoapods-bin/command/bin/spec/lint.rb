@@ -23,7 +23,7 @@ module Pod
               ['--code-dependencies', '使用源码依赖进行 lint'],
               ['--loose-options', '添加宽松的 options, 包括 --use-libraries (可能会造成 entry point (start) undefined)'],
               ['--allow-prerelease', '允许使用 prerelease 的版本 lint']
-            ].concat(Pod::Command::Lib::Spec.options).concat(super).uniq
+            ].concat(Pod::Command::Spec::Lint.options).concat(super).uniq
           end
 
           def initialize(argv)
