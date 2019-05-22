@@ -4,6 +4,8 @@
 
 [基于 CocoaPods 的组件二进制化实践](https://triplecc.github.io/2019/01/21/%E5%9F%BA%E4%BA%8ECocoaPods%E7%9A%84%E7%BB%84%E4%BB%B6%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%8C%96%E5%AE%9E%E8%B7%B5/)
 
+[Demo 工程](https://github.com/for-example-test/cocoapods-bin-example)
+
 ## 概要
 
 本插件所关联的组件二进制化策略：
