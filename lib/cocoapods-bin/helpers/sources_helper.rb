@@ -25,7 +25,7 @@ module CBin
     end
 
     def sources_option(code_dependencies, additional_sources) 
-      (valid_sources(code_dependencies).map(&:name) + additional_sources).join(',')
+      (valid_sources(code_dependencies).map(&:name) + Array(additional_sources)).join(',')
     end
 	end
 end
