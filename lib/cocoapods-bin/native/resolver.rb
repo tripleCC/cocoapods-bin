@@ -34,8 +34,15 @@ module Pod
         additional_requirements.compact!
         requirement = Requirement.new(dependency.requirement.as_list + additional_requirements.flat_map(&:as_list))
         requirement = Requirement.new(dependency.requirement.as_list.map { |r| r + '.a' } + additional_requirements.flat_map(&:as_list)) if podfile.allow_prerelease? && !requirement.prerelease?
+
+        if Pod.match_version?('~> 1.7') 
+          options = podfile.installation_options
+        else
+          options = installation_options
+        end
+
         find_cached_set(dependency).
-          all_specifications(installation_options.warn_for_multiple_pod_sources).
+          all_specifications(options.warn_for_multiple_pod_sources).
           select { |s| requirement.satisfied_by? s.version }.
           map { |s| s.subspec_by_name(dependency.name, false, true) }.
           compact
@@ -109,11 +116,17 @@ module Pod
               # 造成 subspec_by_name 返回 nil，这个是正常现象
               next unless specification
 
+              if Pod.match_version?('~> 1.7')
+                used_by_only = rspec.used_by_non_library_targets_only
+              else
+                used_by_only = rspec.used_by_tests_only
+              end
+              # used_by_only = rspec.respond_to?(:used_by_tests_only) ? rspec.used_by_tests_only : rspec.used_by_non_library_targets_only
               # 组装新的 rspec ，替换原 rspec
               rspec = if Pod.match_version?('~> 1.4.0')
-                        ResolverSpecification.new(specification, rspec.used_by_tests_only)
+                        ResolverSpecification.new(specification, used_by_only)
                       else
-                        ResolverSpecification.new(specification, rspec.used_by_tests_only, source)
+                        ResolverSpecification.new(specification, used_by_only, source)
                       end
               rspec
             rescue Pod::StandardError => error  
