@@ -411,26 +411,6 @@ SPEC REPOS:
 ...
 ```
 
-#### use_binaries_with_spec_selector!
-
-过滤出需要使用二进制版本组件。
-
-假如开发者只需要 `YYModel` 的二进制版本，那么他可以在 Podfile 中添加以下代码：
-
-```ruby
-use_binaries_with_spec_selector! do |spec|
-  spec.name == 'YYModel'
-end
-```
-
-一个实际应用是，三方组件采用二进制版本，团队编写的组件依旧采用源码版本。如果三方组件都在 `cocoapods-repo` 组下，就可以使用以下代码过滤出三方组件：
-
-```ruby
-use_binaries_with_spec_selector! do |spec|
- git = spec.source && spec.source['git']
- git && git.include?('cocoapods-repo')
-end
-```
 
 #### set_use_source_pods
 
@@ -454,6 +434,37 @@ Generating Pods project
 Integrating client project
 Sending stats
 Pod installation complete! There is 1 dependency from the Podfile and 2 total pods installed.
+```
+
+#### use_binaries_with_spec_selector! 
+
+过滤出需要使用二进制版本组件。
+
+假如开发者只需要 `YYModel` 的二进制版本，那么他可以在 Podfile 中添加以下代码：
+
+```ruby
+use_binaries_with_spec_selector! do |spec|
+  spec.name == 'YYModel'
+end
+```
+
+**需要注意的是，如果组件有 subspec ，使用组件名作为判断条件应如下**：
+
+```ruby
+use_binaries_with_spec_selector! do |spec|
+  spec.name.start_with? == '组件名'
+end
+```
+
+如果像上个代码块一样，**直接对比组件名，则插件会忽略此组件的所有 subspec，导致资源拉取错误**，这种场景下，最好通过 `set_use_source_pods` 语句配置依赖。
+
+一个实际应用是，三方组件采用二进制版本，团队编写的组件依旧采用源码版本。如果三方组件都在 `cocoapods-repo` 组下，就可以使用以下代码过滤出三方组件：
+
+```ruby
+use_binaries_with_spec_selector! do |spec|
+ git = spec.source && spec.source['git']
+ git && git.include?('cocoapods-repo')
+end
 ```
 
 #### 其他设置
