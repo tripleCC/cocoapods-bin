@@ -34,13 +34,13 @@ module Pod
           @zip = argv.flag?('zip', true)
           @use_modular_headers = argv.flag?('use-modular-headers')
           @platform = Platform.new(:ios)
-          @spec = Specification.from_file(spec_file)
           super
 
           @additional_args = argv.remainder!
         end
 
         def run 
+          @spec = Specification.from_file(spec_file)
           generate_project
           build_static_framework
           zip_static_framework if @zip

@@ -71,9 +71,25 @@ download_file_type: zip
 
 插件配置完后，就可以部署静态资源服务器了。对于静态资源服务器，这里不做赘述，只提示一点：在生成二进制 podspec 时，插件会根据 `download_file_type` 设置 source 的 `:type` 字段。在下载 http/https 资源时，CocoaPods 会根据 `:type` 字段的类型采取相应的解压方式，如果设置错误就会抛错。这里提到了 **二进制 podspec 的自动生成**，后面会详细介绍。
 
-这里额外说下打包工具 [cocoapods-packager](https://github.com/CocoaPods/cocoapods-packager) 和 [Carthage](https://github.com/Carthage/Carthage/issues) ，前者可以通过 podspec 进行打包，只要保证 lint 通过了，就可以打成 `.framework`，很方便，但是作者几乎不维护了，后者需要结合组件工程。具体使用哪个可以结合自身团队，甚至可以自己写打包脚本。
+这里额外说下打包工具 [cocoapods-packager](https://github.com/CocoaPods/cocoapods-packager) 和 [Carthage](https://github.com/Carthage/Carthage/issues) ，前者可以通过 podspec 进行打包，只要保证 lint 通过了，就可以打成 `.framework`，很方便，但是作者几乎不维护了，后者需要结合组件工程。具体使用哪个可以结合自身团队，甚至可以自己写打包脚本，或者使用本插件的打包命令。
 
 ## 使用插件
+
+接入二进制版本后，常规的发布流程需要做如下变更：
+
+```shell
+# 1 打出二进制产物 && 提交产物至静态文件服务器
+pod bin archive YOUR_OPTIONS
+curl xxxxxxx
+
+# 2.1 发布二进制 podspec
+pod bin repo push --binary YOUR_OPTIONS
+
+# 2.2 发布源码 podspec
+pod bin repo push YOUR_OPTIONS
+```
+
+如果团队内部集成了 CI 平台，那么上面的每大步都可以对应一个 CI stage，源码和二进制版本可并行发布，对应一个 stage 中的两个 job。
 
 ### 基本信息
 
@@ -88,7 +104,7 @@ Usage:
       组件二进制化插件。利用源码私有源与二进制私有源实现对组件依赖类型的切换。
 
 Commands:
-
+    + archive   将组件归档为静态 framework.
     + init      初始化插件.
     + lib       管理二进制 pod.
     + list      展示二进制 pods .
@@ -97,6 +113,28 @@ Commands:
     + search    查找二进制 spec.
     + spec      管理二进制 spec.
 ```
+
+### 构建二进制产物
+
+```shell
+➜  ~ pod bin archive --help
+Usage:
+
+    $ pod bin archive [NAME.podspec]
+
+      将组件归档为静态 framework，仅支持 iOS 平台 此静态 framework 不包含依赖组件的 symbol
+
+Options:
+
+    --code-dependencies     使用源码依赖
+    --allow-prerelease      允许使用 prerelease 的版本
+    --use-modular-headers   使用 modular headers (modulemap)
+    --no-clean              保留构建中间产物
+    --no-zip                不压缩静态 framework 为 zip
+    ...
+```
+
+`pod bin archive` 会根据 podspec 文件构建静态 framework ，此静态 framework 不会包含依赖组件的符号信息。命令内部利用 [cocoapods-generate](https://github.com/square/cocoapods-generate) 插件生成工程，并移植了 [cocoapods-packager](https://github.com/CocoaPods/cocoapods-packager) 插件的部分打包功能，以构建前者生成的工程，默认条件下，命令会生成一个 zip 压缩包。
 
 ### 二进制 podspec
 
