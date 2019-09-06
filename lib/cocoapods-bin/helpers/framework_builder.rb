@@ -120,7 +120,7 @@ module CBin
       end
 
       def static_libs_in_sandbox(build_dir = 'build')
-        Dir.glob("#{build_dir}/lib#{@spec.name}.a")
+        Dir.glob("#{build_dir}/lib#{target_name}.a")
       end
 
       def build_static_library_for_ios(output)
@@ -157,8 +157,16 @@ module CBin
         defines
       end
 
+      def target_name
+        if @spec.available_platforms.count > 1
+          "#{@spec.name}-#{Platform.string_name(@spec.consumer(@platform).platform_name)}"
+        else
+          @spec.name
+        end
+      end
+
       def xcodebuild(defines = '', args = '', build_dir = 'build')
-        command = "xcodebuild #{defines} #{args} CONFIGURATION_BUILD_DIR=#{build_dir} clean build -configuration Release -target #{@spec.name} -project ./Pods.xcodeproj 2>&1"
+        command = "xcodebuild #{defines} #{args} CONFIGURATION_BUILD_DIR=#{build_dir} clean build -configuration Release -target #{target_name} -project ./Pods.xcodeproj 2>&1"
         output = `#{command}`.lines.to_a
 
         if $?.exitstatus != 0

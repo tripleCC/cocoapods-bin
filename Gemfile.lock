@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cocoapods-bin (0.1.18)
+    cocoapods-bin (0.1.19)
       cocoapods (~> 1.4)
       cocoapods-generate (~> 1.4)
       parallel
@@ -101,4 +101,4 @@ DEPENDENCIES
   rake
 
 BUNDLED WITH
-   1.16.1
+   1.17.3
