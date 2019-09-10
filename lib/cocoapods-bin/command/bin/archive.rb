@@ -17,10 +17,9 @@ module Pod
           [
             ['--code-dependencies', '使用源码依赖'],
             ['--allow-prerelease', '允许使用 prerelease 的版本'],
-            ['--use-modular-headers', '使用 modular headers (modulemap)'],
             ['--no-clean', '保留构建中间产物'],
             ['--no-zip', '不压缩静态 framework 为 zip'],
-            ].concat(super)
+            ].concat(Pod::Command::Gen.options).concat(super).uniq
         end
 
         self.arguments = [
@@ -32,7 +31,7 @@ module Pod
           @allow_prerelease = argv.flag?('allow-prerelease')
           @clean = argv.flag?('clean', true)
           @zip = argv.flag?('zip', true)
-          @use_modular_headers = argv.flag?('use-modular-headers')
+          @sources = argv.option('sources') || []
           @platform = Platform.new(:ios)
           super
 
@@ -61,9 +60,8 @@ module Pod
                   *@additional_args
                 ]
 
-                argvs << '--use-modular-headers' if @use_modular_headers
                 argvs << spec_file if spec_file
-              
+
                 gen = Pod::Command::Gen.new(CLAide::ARGV.new(argvs))
                 gen.validate!
                 gen.run
