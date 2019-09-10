@@ -112,6 +112,7 @@ Commands:
     + repo      管理 spec 仓库.
     + search    查找二进制 spec.
     + spec      管理二进制 spec.
+    + umbrella  生成伞头文件 .
 ```
 
 ### 构建二进制产物
