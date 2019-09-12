@@ -410,6 +410,12 @@ plugin 'cocoapods-bin'
 
 全部组件使用二进制版本。
 
+支持传入布尔值控制是否使用二进制版本，比如 DEBUG 包使用二进制版本，正式包使用源码版本，Podfile 关联语句可以这样写：
+
+```ruby
+use_binaries! (ENV['DEBUG'].nil? || ENV['DEBUG'] == 'true')
+```
+
 当组件没有二进制版本时，插件会强制工程依赖该组件的源码版本。开发者可以通过执行 `pod install--verbose` option ，在分析依赖步骤查看哪些组件没有二进制版本：
 
 ```shell
