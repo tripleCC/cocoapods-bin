@@ -41,9 +41,15 @@ module Pod
           options = installation_options
         end
 
-        find_cached_set(dependency).
-          all_specifications(options.warn_for_multiple_pod_sources).
-          select { |s| requirement.satisfied_by? s.version }.
+        if Pod.match_version?('~> 1.8') 
+          specifications = find_cached_set(dependency).
+            all_specifications(options.warn_for_multiple_pod_sources, requirement)
+        else
+          specifications = find_cached_set(dependency).
+            all_specifications(options.warn_for_multiple_pod_sources)
+        end
+
+        specifications.
           map { |s| s.subspec_by_name(dependency.name, false, true) }.
           compact
       end
