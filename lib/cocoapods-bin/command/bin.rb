@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cocoapods-bin/command/bin/init'
 require 'cocoapods-bin/command/bin/spec'
 require 'cocoapods-bin/command/bin/lib'
@@ -42,9 +44,9 @@ module Pod
 
       def initialize(argv)
         require 'cocoapods-bin/native'
-        
+
         @help = argv.flag?('help')
-        super 
+        super
       end
 
       def validate!

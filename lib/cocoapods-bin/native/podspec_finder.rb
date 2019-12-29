@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cocoapods-bin/native/specification'
 
 module Pod
@@ -5,6 +7,7 @@ module Pod
     class PodspecFinder
       def podspecs
         return @specs_by_name if @specs_by_name
+
         @specs_by_name = {}
         spec_files = Pathname.glob(root + '{,*}.podspec{,.json}')
         # pod 指向分支时，如果目标组件有 subspec ，并且有 template spec ，request 之后使用的 spec 不应该为 template spec

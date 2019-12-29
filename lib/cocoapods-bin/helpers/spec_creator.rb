@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cocoapods'
 require 'cocoapods-bin/config/config'
 
@@ -8,22 +10,24 @@ module CBin
       attr_reader :template_spec
       attr_reader :spec
 
-      def initialize(code_spec, template_spec, platforms = 'ios') 
+      def initialize(code_spec, template_spec, platforms = 'ios')
         @code_spec = code_spec
         @template_spec = template_spec
         @platforms = Array(platforms)
-        validate!     
+        validate!
       end
 
       def validate!
-        raise Pod::Informative, "源码 podspec 不能为空 ."  unless code_spec
-        raise Pod::Informative, "不支持自动生成存在 subspec 的二进制 podspec , 需要提供模版文件 #{code_spec.name}.binary.podspec.template ."  if code_spec.subspecs.any? && template_spec.nil?
+        raise Pod::Informative, '源码 podspec 不能为空 .' unless code_spec
+        if code_spec.subspecs.any? && template_spec.nil?
+          raise Pod::Informative, "不支持自动生成存在 subspec 的二进制 podspec , 需要提供模版文件 #{code_spec.name}.binary.podspec.template ."
+        end
       end
 
       def create
         spec = template_spec ? create_from_code_spec_and_template_spec : create_from_code_spec
 
-        Pod::UI.message "生成二进制 podspec 内容: "
+        Pod::UI.message '生成二进制 podspec 内容: '
         spec.to_pretty_json.split("\n").each do |text|
           Pod::UI.message text
         end
@@ -38,15 +42,15 @@ module CBin
           f.write(spec.to_pretty_json)
         end
 
-        @filename = file 
+        @filename = file
       end
 
       def clear_spec_file
         File.delete(filename) if File.exist?(filename)
       end
 
-      def filename 
-        @filename ||= "#{spec.name}.binary.podspec.json" 
+      def filename
+        @filename ||= "#{spec.name}.binary.podspec.json"
       end
 
       private
@@ -62,8 +66,12 @@ module CBin
         # Resources
         extnames = []
         extnames << '*.bundle' if code_spec_consumer.resource_bundles.any?
-        extnames += code_spec_consumer.resources.map { |r| File.basename(r) } if code_spec_consumer.resources.any?
-        @spec.resources = framework_contents('Resources').flat_map { |r| extnames.map { |e| "#{r}/#{e}" } } if extnames.any?
+        if code_spec_consumer.resources.any?
+          extnames += code_spec_consumer.resources.map { |r| File.basename(r) }
+        end
+        if extnames.any?
+          @spec.resources = framework_contents('Resources').flat_map { |r| extnames.map { |e| "#{r}/#{e}" } }
+        end
 
         # Source Location
         @spec.source = binary_source
@@ -72,7 +80,7 @@ module CBin
         @spec.source_files = framework_contents('Headers/*')
         @spec.public_header_files = framework_contents('Headers/*')
 
-        # Unused for binary 
+        # Unused for binary
         spec_hash = @spec.to_hash
         # spec_hash.delete('license')
         spec_hash.delete('resource_bundles')
@@ -85,14 +93,16 @@ module CBin
         # spec_hash.delete('vendored_libraries')
         # libraries 只能假设为动态库不做处理了，如果有例外，需要开发者自行处理
         vendored_libraries = spec_hash.delete('vendored_libraries')
-        vendored_libraries = Array(vendored_libraries).reject { |l| l.end_with?('.a') } 
-        spec_hash['vendored_libraries'] = vendored_libraries if vendored_libraries.any?
+        vendored_libraries = Array(vendored_libraries).reject { |l| l.end_with?('.a') }
+        if vendored_libraries.any?
+          spec_hash['vendored_libraries'] = vendored_libraries
+        end
 
         # Filter platforms
         platforms = spec_hash['platforms']
-        selected_platforms = platforms.select { |k, v| @platforms.include?(k) } 
+        selected_platforms = platforms.select { |k, _v| @platforms.include?(k) }
         spec_hash['platforms'] = selected_platforms.empty? ? platforms : selected_platforms
-   
+
         @spec = Pod::Specification.from_hash(spec_hash)
         @spec
       end
@@ -106,10 +116,10 @@ module CBin
       end
 
       def binary_source
-        { http: CBin.config.binary_download_url % [code_spec.root.name, code_spec.version], type: CBin.config.download_file_type } 
+        { http: format(CBin.config.binary_download_url, code_spec.root.name, code_spec.version), type: CBin.config.download_file_type }
       end
 
-      def code_spec_consumer(platform = :ios)
+      def code_spec_consumer(_platform = :ios)
         code_spec.consumer(:ios)
       end
 

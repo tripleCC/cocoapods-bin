@@ -1,13 +1,15 @@
+# frozen_string_literal: true
+
 # copy from https://github.com/CocoaPods/cocoapods-packager
 
 require 'cocoapods-bin/helpers/framework.rb'
 
 module CBin
-	class Framework
+  class Framework
     class Builder
       include Pod
 
-      def initialize(spec, file_accessor, platform, source_dir) 
+      def initialize(spec, file_accessor, platform, source_dir)
         @spec = spec
         @source_dir = source_dir
         @file_accessor = file_accessor
@@ -16,7 +18,7 @@ module CBin
       end
 
       def build
-        UI.section("Building static framework #{@spec}") do 
+        UI.section("Building static framework #{@spec}") do
           defines = compile
 
           build_sim_libraries(defines)
@@ -29,15 +31,15 @@ module CBin
 
           cp_to_source_dir
         end
-      end 
+      end
 
       private
 
       def cp_to_source_dir
-        target_dir = "#{@source_dir}/#{@spec.name}.framework" 
+        target_dir = "#{@source_dir}/#{@spec.name}.framework"
         FileUtils.rm_rf(target_dir) if File.exist?(target_dir)
 
-        `cp -fa #{@platform.to_s}/#{@spec.name}.framework #{@source_dir}` 
+        `cp -fa #{@platform}/#{@spec.name}.framework #{@source_dir}`
       end
 
       def build_sim_libraries(defines)
@@ -49,8 +51,8 @@ module CBin
         public_headers = @file_accessor.public_headers
         UI.message "Copying public headers #{public_headers.map(&:basename).map(&:to_s)}"
 
-        public_headers.each do |h| 
-          `ditto #{h} #{framework.headers_path}/#{h.basename}` 
+        public_headers.each do |h|
+          `ditto #{h} #{framework.headers_path}/#{h.basename}`
         end
 
         # If custom 'module_map' is specified add it to the framework distribution
@@ -58,7 +60,9 @@ module CBin
         # create a default 'module_map' one using it.
         if !@spec.module_map.nil?
           module_map_file = @file_accessor.module_map
-          module_map = File.read(module_map_file) if Pathname(module_map_file).exist?
+          if Pathname(module_map_file).exist?
+            module_map = File.read(module_map_file)
+         end
         elsif public_headers.map(&:basename).map(&:to_s).include?("#{@spec.name}.h")
           module_map = <<-MAP
           framework module #{@spec.name} {
@@ -72,26 +76,28 @@ module CBin
 
         unless module_map.nil?
           UI.message "Writing module map #{module_map}"
-          framework.module_map_path.mkpath unless framework.module_map_path.exist?
+          unless framework.module_map_path.exist?
+            framework.module_map_path.mkpath
+         end
           File.write("#{framework.module_map_path}/module.modulemap", module_map)
         end
       end
 
       def copy_license
-        UI.message "Copying license"
+        UI.message 'Copying license'
         license_file = @spec.license[:file] || 'LICENSE'
         `cp "#{license_file}" .` if Pathname(license_file).exist?
       end
 
       def copy_resources
-        bundles = Dir.glob("./build/*.bundle")
+        bundles = Dir.glob('./build/*.bundle')
 
         bundle_names = [@spec, *@spec.recursive_subspecs].flat_map do |spec|
           consumer = spec.consumer(@platform)
           consumer.resource_bundles.keys +
-          consumer.resources.map do |r| 
-            File.basename(r, '.bundle') if File.extname(r) == 'bundle'
-          end
+            consumer.resources.map do |r|
+              File.basename(r, '.bundle') if File.extname(r) == 'bundle'
+            end
         end.compact.uniq
 
         bundles.select! do |bundle|
@@ -140,7 +146,7 @@ module CBin
       end
 
       def ios_architectures
-        archs = %w(x86_64 arm64 armv7 armv7s i386)
+        archs = %w[x86_64 arm64 armv7 armv7s i386]
         @vendored_libraries.each do |library|
           archs = `lipo -info #{library}`.split & archs
         end
@@ -169,11 +175,11 @@ module CBin
         command = "xcodebuild #{defines} #{args} CONFIGURATION_BUILD_DIR=#{build_dir} clean build -configuration Release -target #{target_name} -project ./Pods.xcodeproj 2>&1"
         output = `#{command}`.lines.to_a
 
-        if $?.exitstatus != 0
-          raise <<-EOF
-Build command failed: #{command}
-Output:
-#{output.map { |line| "    #{line}" }.join}
+        if $CHILD_STATUS.exitstatus != 0
+          raise <<~EOF
+            Build command failed: #{command}
+            Output:
+            #{output.map { |line| "    #{line}" }.join}
           EOF
 
           Process.exit
@@ -187,12 +193,12 @@ Output:
       end
 
       def framework
-        @framework ||= begin 
+        @framework ||= begin
           framework = Framework.new(@spec.name, @platform.name.to_s)
           framework.make
           framework
         end
       end
     end
-	end
+  end
 end

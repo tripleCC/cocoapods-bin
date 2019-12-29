@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cocoapods'
 
 module Pod
@@ -15,12 +17,13 @@ module Pod
     def specification_path(name, version)
       raise ArgumentError, 'No name' unless name
       raise ArgumentError, 'No version' unless version
+
       path = pod_path(name) + version.to_s
 
       specification_path = Specification::VALID_EXTNAME
-        .map { |extname| "#{name}#{extname}" }
-        .map { |file| path + file }
-        .find { |path| path.exist? }
+                           .map { |extname| "#{name}#{extname}" }
+                           .map { |file| path + file }
+                           .find(&:exist?)
 
       unless specification_path
         raise StandardError, "Unable to find the specification #{name} " \

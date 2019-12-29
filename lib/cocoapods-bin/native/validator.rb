@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 module Pod
   class Validator
@@ -10,7 +11,6 @@ module Pod
     #           'This will be an error in future releases. Please update the URL to use https.')
     # end
 
-    def validate_source_url(spec)
-    end
+    def validate_source_url(spec); end
   end
 end

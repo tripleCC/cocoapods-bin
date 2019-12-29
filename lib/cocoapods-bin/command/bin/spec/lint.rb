@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'cocoapods-bin/config/config'
 require 'cocoapods-bin/native/podfile'
 
 module Pod
   class Command
     class Bin < Command
-      class Spec < Bin 
+      class Spec < Bin
         class Lint < Spec
           self.summary = 'lint spec.'
           self.description = <<-DESC
@@ -12,7 +14,7 @@ module Pod
           DESC
 
           self.arguments = [
-            CLAide::Argument.new(%w(NAME.podspec DIRECTORY http://PATH/NAME.podspec), false, true),
+            CLAide::Argument.new(%w[NAME.podspec DIRECTORY http://PATH/NAME.podspec], false, true)
           ]
 
           def self.options
@@ -40,10 +42,10 @@ module Pod
             @additional_args = argv.remainder!
           end
 
-          def run 
+          def run
             Podfile.execute_with_bin_plugin do
-              Podfile.execute_with_allow_prerelease(@allow_prerelease) do 
-                Podfile.execute_with_use_binaries(!@code_dependencies) do 
+              Podfile.execute_with_allow_prerelease(@allow_prerelease) do
+                Podfile.execute_with_use_binaries(!@code_dependencies) do
                   argvs = [
                     "--sources=#{sources_option(@code_dependencies, @sources)}",
                     *@additional_args
@@ -53,7 +55,9 @@ module Pod
 
                   if @loose_options
                     argvs += ['--allow-warnings']
-                    argvs << '--use-libraries' if code_spec&.all_dependencies&.any?
+                    if code_spec&.all_dependencies&.any?
+                      argvs << '--use-libraries'
+                    end
                   end
 
                   lint = Pod::Command::Spec::Lint.new(CLAide::ARGV.new(argvs))
@@ -71,8 +75,8 @@ module Pod
           def template_spec_file
             @template_spec_file ||= begin
               if @template_podspec
-                find_spec_file(@template_podspec) 
-              else 
+                find_spec_file(@template_podspec)
+              else
                 binary_template_spec_file
               end
             end
@@ -83,11 +87,15 @@ module Pod
               if @podspec
                 find_spec_file(@podspec) || @podspec
               else
-                raise Informative, "当前目录下没有找到可用源码 podspec." if code_spec_files.empty?
+                if code_spec_files.empty?
+                  raise Informative, '当前目录下没有找到可用源码 podspec.'
+                end
 
                 spec_file = if @binary
                               code_spec = Pod::Specification.from_file(code_spec_files.first)
-                              template_spec = Pod::Specification.from_file(template_spec_file) if template_spec_file
+                              if template_spec_file
+                                template_spec = Pod::Specification.from_file(template_spec_file)
+                              end
                               create_binary_spec_file(code_spec, template_spec)
                             else
                               code_spec_files.first

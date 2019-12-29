@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'cocoapods-bin/native/sources_manager.rb'
 
 module CBin
-	module SourcesHelper
+  module SourcesHelper
     def sources_manager
       Pod::Config.instance.sources_manager
     end
@@ -24,8 +26,8 @@ module CBin
       sources
     end
 
-    def sources_option(code_dependencies, additional_sources) 
+    def sources_option(code_dependencies, additional_sources)
       (valid_sources(code_dependencies).map(&:url) + Array(additional_sources)).join(',')
     end
-	end
+  end
 end

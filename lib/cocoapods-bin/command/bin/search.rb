@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 module Pod
   class Command
     class Bin < Command
-      class Search < Bin 
+      class Search < Bin
         self.summary = '查找二进制 spec.'
 
         self.arguments = [
-          CLAide::Argument.new('QUERY', true),
+          CLAide::Argument.new('QUERY', true)
         ]
 
         def self.options
@@ -13,7 +15,7 @@ module Pod
             ['--code', '查找源码 spec'],
             ['--stats', '展示额外信息'],
             ['--no-pager', '不以 pager 形式展示'],
-            ['--regex', '`QUERY` 视为正则'],
+            ['--regex', '`QUERY` 视为正则']
           ]
         end
 
@@ -31,17 +33,17 @@ module Pod
           help! '必须指定查找的组件.' unless @query
         end
 
-        def run 
-          query_regex = @query.reduce([]) { |result, q|
+        def run
+          query_regex = @query.reduce([]) do |result, q|
             result << (@use_regex ? q : Regexp.escape(q))
-          }.join(' ').strip 
+          end.join(' ').strip
 
           source = @code ? code_source : binary_source
 
           aggregate = Pod::Source::Aggregate.new([source])
           sets = aggregate.search_by_name(query_regex, true)
 
-          if(@use_pager)
+          if @use_pager
             UI.with_pager { print_sets(sets) }
           else
             print_sets(sets)

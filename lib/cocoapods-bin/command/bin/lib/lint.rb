@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'cocoapods-bin/config/config'
 require 'cocoapods-bin/native/podfile'
 
 module Pod
   class Command
     class Bin < Command
-      class Lib < Bin 
+      class Lib < Bin
         class Lint < Lib
           self.summary = 'lint 组件.'
           self.description = <<-DESC
@@ -12,7 +14,7 @@ module Pod
           DESC
 
           self.arguments = [
-            CLAide::Argument.new('NAME.podspec', false),
+            CLAide::Argument.new('NAME.podspec', false)
           ]
 
           # lib lint 不会下载 source，所以不能进行二进制 lint
@@ -36,21 +38,23 @@ module Pod
             @additional_args = argv.remainder!
           end
 
-          def run 
-            Podfile.execute_with_bin_plugin do 
-              Podfile.execute_with_allow_prerelease(@allow_prerelease) do 
-                Podfile.execute_with_use_binaries(!@code_dependencies) do 
+          def run
+            Podfile.execute_with_bin_plugin do
+              Podfile.execute_with_allow_prerelease(@allow_prerelease) do
+                Podfile.execute_with_use_binaries(!@code_dependencies) do
                   argvs = [
                     @podspec || code_spec_files.first,
                     "--sources=#{sources_option(@code_dependencies, @sources)}",
                     *@additional_args
                   ]
-                  
+
                   if @loose_options
                     argvs << '--allow-warnings'
-                    argvs << '--use-libraries' if code_spec&.all_dependencies&.any?
+                    if code_spec&.all_dependencies&.any?
+                      argvs << '--use-libraries'
+                    end
                   end
-                
+
                   lint = Pod::Command::Lib::Lint.new(CLAide::ARGV.new(argvs))
                   lint.validate!
                   lint.run

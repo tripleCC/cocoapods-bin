@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'cocoapods-bin/config/config_asker'
 
 module Pod
   class Command
     class Bin < Command
-      class Init < Bin 
+      class Init < Bin
         self.summary = '初始化插件.'
         self.description = <<-DESC
           创建 #{CBin.config.config_file} 文件，在其中保存插件需要的配置信息，
@@ -12,17 +14,16 @@ module Pod
 
         def self.options
           [
-            ['--bin-url=URL', '配置文件地址，直接从此地址下载配置文件'],
+            ['--bin-url=URL', '配置文件地址，直接从此地址下载配置文件']
           ].concat(super)
         end
-
 
         def initialize(argv)
           @bin_url = argv.option('bin-url')
           super
         end
 
-        def run 
+        def run
           if @bin_url.nil?
             config_with_asker
           else
@@ -37,12 +38,12 @@ module Pod
 
           UI.puts "开始下载配置文件...\n"
           file = open(url)
-          contents = YAML.load(file.read) 
-          
+          contents = YAML.safe_load(file.read)
+
           UI.puts "开始同步配置文件...\n"
-          CBin.config.sync_config(contents.to_hash)          
+          CBin.config.sync_config(contents.to_hash)
           UI.puts "设置完成.\n".green
-        rescue Errno::ENOENT => error 
+        rescue Errno::ENOENT => e
           raise Informative, "配置文件路径 #{url} 无效，请确认后重试."
         end
 
@@ -53,7 +54,11 @@ module Pod
           config = {}
           template_hash = CBin.config.template_hash
           template_hash.each do |k, v|
-            default = CBin.config.send(k) rescue nil
+            default = begin
+                        CBin.config.send(k)
+                      rescue StandardError
+                        nil
+                      end
             config[k] = asker.ask_with_answer(v[:description], default, v[:selection])
           end
 

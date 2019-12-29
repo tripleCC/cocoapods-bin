@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'cocoapods-bin/native/specification'
 
 module Pod
   class Specification
     class Linter
-    	# !@group Lint steps
+      # !@group Lint steps
 
       # Checks that the spec's root name matches the filename.
       #

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cocoapods'
 require 'cocoapods-bin/native/podfile_env'
 
@@ -27,15 +29,14 @@ module Pod
       end
     end
 
-    alias_method :old_plugins, :plugins 
+    alias old_plugins plugins
     def plugins
       if ENV[USE_PLUGINS]
-        env_plugins = ENV[USE_PLUGINS].split(',').reduce({}) do |result, name| 
-          result[name] = {} 
-          result
+        env_plugins = ENV[USE_PLUGINS].split(',').each_with_object({}) do |name, result|
+          result[name] = {}
         end
         env_plugins.merge!(old_plugins)
-      else 
+      else
         old_plugins
       end
     end
@@ -57,8 +58,11 @@ module Pod
     end
 
     private
+
     def valid_bin_plugin
-      raise Pod::Informative, 'You should add `plugin \'cocoapods-bin\'` before using its DSL' unless plugins.keys.include?('cocoapods-bin')
+      unless plugins.keys.include?('cocoapods-bin')
+        raise Pod::Informative, 'You should add `plugin \'cocoapods-bin\'` before using its DSL'
+      end
     end
 
     # set_hash_value 有 key 限制

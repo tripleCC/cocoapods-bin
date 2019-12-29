@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 # copy from https://github.com/CocoaPods/cocoapods-packager
 
 module CBin
-	class Framework
+  class Framework
     attr_reader :headers_path
     attr_reader :module_map_path
     attr_reader :resources_path
@@ -58,5 +60,5 @@ module CBin
       @root_path = Pathname.new(@platform)
       @root_path.mkpath unless @root_path.exist?
     end
-	end
+  end
 end

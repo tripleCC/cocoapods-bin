@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'cocoapods-bin/helpers'
 
 module Pod
   class Command
     class Bin < Command
-      class Spec < Bin 
+      class Spec < Bin
         class Create < Spec
           self.summary = '创建二进制 spec.'
           self.description = <<-DESC
@@ -19,18 +21,20 @@ module Pod
           end
 
           def initialize(argv)
-            @platforms = argv.option('platforms', 'ios') 
+            @platforms = argv.option('platforms', 'ios')
             @allow_overwrite = argv.flag?('overwrite', true)
             @template_podspec = argv.option('template-podspec')
             @podspec = argv.shift_argument
             super
           end
 
-          def run 
+          def run
             UI.puts "开始读取 podspec 文件...\n"
 
             code_spec = Pod::Specification.from_file(spec_file)
-            template_spec = Pod::Specification.from_file(template_spec_file) if template_spec_file
+            if template_spec_file
+              template_spec = Pod::Specification.from_file(template_spec_file)
+            end
 
             if binary_spec && !@allow_overwrite
               UI.warn "二进制 podspec 文件 #{binary_spec_files.first} 已存在.\n"
@@ -44,8 +48,8 @@ module Pod
           def template_spec_file
             @template_spec_file ||= begin
               if @template_podspec
-                find_spec_file(@template_podspec) 
-              else 
+                find_spec_file(@template_podspec)
+              else
                 binary_template_spec_file
               end
             end
@@ -54,9 +58,12 @@ module Pod
           def spec_file
             @spec_file ||= begin
               if @podspec
-                find_spec_file(@podspec) 
+                find_spec_file(@podspec)
               else
-                raise Informative, "当前目录下没有找到可用源码 podspec." if code_spec_files.empty?
+                if code_spec_files.empty?
+                  raise Informative, '当前目录下没有找到可用源码 podspec.'
+                end
+
                 code_spec_files.first
               end
             end

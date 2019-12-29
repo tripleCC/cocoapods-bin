@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 module Pod
   module Generator
     class Acknowledgements
-    	def license_text(spec)
+      def license_text(spec)
         return nil unless spec.license
+
         text = spec.license[:text]
         unless text
           if license_file = spec.license[:file]
