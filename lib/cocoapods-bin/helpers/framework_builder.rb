@@ -3,6 +3,7 @@
 # copy from https://github.com/CocoaPods/cocoapods-packager
 
 require 'cocoapods-bin/helpers/framework.rb'
+require 'English'
 
 module CBin
   class Framework
@@ -176,7 +177,7 @@ module CBin
         command = "xcodebuild #{defines} #{args} CONFIGURATION_BUILD_DIR=#{build_dir} clean build -configuration Release -target #{target_name} -project ./Pods.xcodeproj 2>&1"
         output = `#{command}`.lines.to_a
 
-        if $?.exitstatus != 0
+        if $CHILD_STATUS.exitstatus != 0
           raise <<~EOF
             Build command failed: #{command}
             Output:
