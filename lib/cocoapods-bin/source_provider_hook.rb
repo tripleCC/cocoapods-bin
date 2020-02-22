@@ -22,7 +22,7 @@ Pod::HooksManager.register('cocoapods-bin', :pre_install) do |_context, _|
       # rubocop:enable Eval
     rescue Exception => e
       message = "Invalid `#{path}` file: #{e.message}"
-      raise DSLError.new(message, path, e, contents)
+      raise Pod::DSLError.new(message, path, e, contents)
     end
     # rubocop:disable Lint/RescueException
   end
