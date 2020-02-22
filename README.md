@@ -8,9 +8,13 @@
 
 ## 更新
 
-#### 0.1.26
+#### 0.1.28
 
-新增本地组件依赖配置文件 BinPodfile ，应对不想把本地采用的源码/二进制配置传到远程仓库的情况。如果存在此类需求，需要手动创建 BinPodfile ，并将其加入 .gitignore 。并且 BinPodfile 中的配置选项优先级比 Podfile 高，支持和 Podfile 相同的配置语句，如 :
+新增本地组件依赖配置文件 BinPodfile ，
+
+场景: 不希望把本地采用的源码/二进制配置传到远程仓库。
+
+使用: 在 Podfile 同级目录下创建 BinPodfile ，并将其加入 .gitignore 。BinPodfile 中的配置选项优先级比 Podfile 高，支持和 Podfile 相同的配置语句，如 :
 
 ```ruby
 # BinPodfile
