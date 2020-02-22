@@ -6,6 +6,21 @@
 
 [Demo 工程](https://github.com/for-example-test/cocoapods-bin-example)
 
+## 更新
+
+#### 0.1.26
+
+新增本地组件依赖配置文件 BinPodfile ，应对不想把本地采用的源码/二进制配置传到远程仓库的情况。如果存在此类需求，需要手动创建 BinPodfile ，并将其加入 .gitignore 。并且 BinPodfile 中的配置选项优先级比 Podfile 高，支持和 Podfile 相同的配置语句，如 :
+
+```ruby
+# BinPodfile
+
+use_binaries!
+set_use_source_pods ['YYModel']
+
+```
+
+
 ## 概要
 
 本插件所关联的组件二进制化策略：

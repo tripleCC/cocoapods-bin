@@ -72,13 +72,13 @@ module Pod
             has_changed_repo = !previous_spec_repo.nil? && current_repo && (current_repo != previous_spec_repo)
             title = "Installing #{spec.name} #{spec.version}"
             if has_changed_version && has_changed_repo
-              title << " (was #{previous_version} and source changed to `#{current_repo}` from `#{previous_spec_repo}`)"
+              title += " (was #{previous_version} and source changed to `#{current_repo}` from `#{previous_spec_repo}`)"
               end
             if has_changed_version && !has_changed_repo
-              title << " (was #{previous_version})"
+              title += " (was #{previous_version})"
               end
             if !has_changed_version && has_changed_repo
-              title << " (source changed to `#{current_repo}` from `#{previous_spec_repo}`)"
+              title += " (source changed to `#{current_repo}` from `#{previous_spec_repo}`)"
               end
           else
             title = "Installing #{spec}"

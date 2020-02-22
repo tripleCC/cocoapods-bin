@@ -4,6 +4,28 @@ require 'cocoapods-bin/native/sources_manager'
 
 Pod::HooksManager.register('cocoapods-bin', :pre_install) do |_context, _|
   require 'cocoapods-bin/native'
+
+  # 同步 BinPodfile 文件
+  project_root = Pod::Config.instance.project_root
+  path = File.join(project_root.to_s, 'BinPodfile')
+
+  return unless File.exist?(path)
+
+  contents = File.open(path, 'r:utf-8', &:read)
+
+  podfile = Pod::Config.instance.podfile
+  podfile.instance_eval do
+    # rubocop:disable Lint/RescueException
+    begin
+      # rubocop:disable Eval
+      eval(contents, nil, path)
+      # rubocop:enable Eval
+    rescue Exception => e
+      message = "Invalid `#{path}` file: #{e.message}"
+      raise DSLError.new(message, path, e, contents)
+    end
+    # rubocop:disable Lint/RescueException
+  end
 end
 
 Pod::HooksManager.register('cocoapods-bin', :source_provider) do |context, _|
