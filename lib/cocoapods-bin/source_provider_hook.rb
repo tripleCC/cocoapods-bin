@@ -9,22 +9,18 @@ Pod::HooksManager.register('cocoapods-bin', :pre_install) do |_context, _|
   project_root = Pod::Config.instance.project_root
   path = File.join(project_root.to_s, 'BinPodfile')
 
-  return unless File.exist?(path)
+  next unless File.exist?(path)
 
   contents = File.open(path, 'r:utf-8', &:read)
 
   podfile = Pod::Config.instance.podfile
   podfile.instance_eval do
-    # rubocop:disable Lint/RescueException
     begin
-      # rubocop:disable Eval
       eval(contents, nil, path)
-      # rubocop:enable Eval
     rescue Exception => e
       message = "Invalid `#{path}` file: #{e.message}"
-      raise DSLError.new(message, path, e, contents)
+      raise Pod::DSLError.new(message, path, e, contents)
     end
-    # rubocop:disable Lint/RescueException
   end
 end
 
