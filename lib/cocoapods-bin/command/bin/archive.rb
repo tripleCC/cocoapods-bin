@@ -58,7 +58,6 @@ module Pod
                   "--sources=#{sources_option(@code_dependencies, @sources)}",
                   "--gen-directory=#{gen_name}",
                   '--clean',
-                  '--use-libraries',
                   *@additional_args
                 ]
 
