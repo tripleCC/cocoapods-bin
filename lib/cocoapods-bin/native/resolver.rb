@@ -31,8 +31,7 @@ module Pod
 
     if Pod.match_version?('~> 1.4')
       def specifications_for_dependency(dependency, additional_requirements_frozen = [])
-        additional_requirements = additional_requirements_frozen.dup
-        additional_requirements.compact!
+        additional_requirements = additional_requirements_frozen.dup.compact
         requirement = Requirement.new(dependency.requirement.as_list + additional_requirements.flat_map(&:as_list))
         if podfile.allow_prerelease? && !requirement.prerelease?
           requirement = Requirement.new(dependency.requirement.as_list.map { |r| r + '.a' } + additional_requirements.flat_map(&:as_list))
@@ -50,6 +49,7 @@ module Pod
         else
           specifications = find_cached_set(dependency)
                            .all_specifications(options.warn_for_multiple_pod_sources)
+                           .select { |s| requirement.satisfied_by? s.version }
         end
 
         specifications
