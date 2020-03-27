@@ -36,7 +36,7 @@ module Pod
           @sources = argv.option('sources') || []
           @platform = Platform.new(:ios)
           super
-
+          @podspec = argv.shift_argument
           @additional_args = argv.remainder!
         end
 
