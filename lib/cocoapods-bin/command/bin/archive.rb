@@ -35,6 +35,7 @@ module Pod
           @zip = argv.flag?('zip', true)
           @sources = argv.option('sources') || []
           @platform = Platform.new(:ios)
+          @podspec = argv.shift_argument
           super
 
           @additional_args = argv.remainder!
