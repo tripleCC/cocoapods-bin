@@ -1,3 +1,5 @@
+此库已不维护，如有需求可使用 [MeetYouDevs/cocoapods-imy-bin](https://github.com/MeetYouDevs/cocoapods-imy-bin) 
+
 # cocoapods-bin
 
 组件二进制化插件。
