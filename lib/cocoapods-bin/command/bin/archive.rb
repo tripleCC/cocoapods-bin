@@ -37,7 +37,7 @@ module Pod
           @platform = Platform.new(:ios)
           @podspec = argv.shift_argument
           super
-
+          @podspec = argv.shift_argument
           @additional_args = argv.remainder!
         end
 
